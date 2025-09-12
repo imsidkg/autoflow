@@ -7,7 +7,12 @@
       {
         "name": "next"
       }
-    ]
+    ],
+    "paths": {
+      "@/*": ["./*"],
+      "@/components/*": ["./components/*"],
+      "@/lib/utils": ["./lib/utils"]
+    }
   },
   "include": [
     "**/*.ts",
