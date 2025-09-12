@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 interface Workflow {
   id: string;
@@ -27,7 +29,7 @@ export default function WorkflowsPage() {
       }
 
       try {
-        const response = await fetch(`http://localhost:3002/workflows`, { // Using the new /workflows endpoint
+        const response = await fetch(`http://localhost:3002/workflows`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -59,35 +61,40 @@ export default function WorkflowsPage() {
   };
 
   if (loading) {
-    return <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>Loading workflows...</div>;
+    return <div className="flex justify-center items-center h-screen">Loading workflows...</div>;
   }
 
   if (error) {
-    return <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", color: "red" }}>Error: {error}</div>;
+    return <div className="flex justify-center items-center h-screen text-red-500">Error: {error}</div>;
   }
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>My Workflows</h1>
+    <div className="p-5">
+      <h1 className="text-3xl font-bold mb-5">My Workflows</h1>
       {workflows.length === 0 ? (
-        <p>No workflows found. Create one!</p>
+        <p className="text-gray-600">No workflows found. Create one!</p>
       ) : (
-        <ul style={{ listStyle: "none", padding: 0 }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {workflows.map((workflow) => (
-            <li key={workflow.id} style={{ marginBottom: "10px", border: "1px solid #eee", padding: "10px", borderRadius: "5px", cursor: "pointer" }}
-                onClick={() => handleWorkflowClick(workflow.id)}>
-              <h2>{workflow.name}</h2>
-              {workflow.description && <p>{workflow.description}</p>}
-            </li>
+            <Card key={workflow.id} className="cursor-pointer hover:shadow-lg transition-shadow"
+                  onClick={() => handleWorkflowClick(workflow.id)}>
+              <CardHeader>
+                <CardTitle>{workflow.name}</CardTitle>
+                {workflow.description && <CardDescription>{workflow.description}</CardDescription>}
+              </CardHeader>
+              <CardContent>
+                {/* You can add more details here if needed */}
+              </CardContent>
+            </Card>
           ))}
-        </ul>
+        </div>
       )}
-      <button
+      <Button
         onClick={() => router.push("/workflows/new")} // Assuming a new workflow creation page
-        style={{ padding: "10px", borderRadius: "4px", border: "none", backgroundColor: "#28a745", color: "white", cursor: "pointer", marginTop: "20px" }}
+        className="mt-5 bg-green-500 hover:bg-green-600 text-white"
       >
         Create New Workflow
-      </button>
+      </Button>
     </div>
   );
 }
