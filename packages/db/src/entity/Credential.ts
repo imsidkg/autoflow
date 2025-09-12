@@ -1,7 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import type { User } from './User.js'; // Add 'type'
-
-
+import type { User } from './User.js';
 
 @Entity('credentials')
 export class Credential {
@@ -9,14 +7,14 @@ export class Credential {
   id!: string;
 
   @Column()
-  name!: string;
+  type!: string;
 
   @Column()
-  type!: string;
+  name!: string;
 
   @Column('jsonb')
   data!: any;
 
   @ManyToOne('User', (user: User) => user.credentials)
-user!: User;
+  user!: User;
 }

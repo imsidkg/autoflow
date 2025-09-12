@@ -37,6 +37,6 @@ export class User {
   @OneToMany('Execution', (execution: Execution) => execution.user)
   executions!: Execution[];
 
-  @OneToMany('Credential', (credential: Credential) => credential.user)
+    @OneToMany('Credential', (credential: Credential) => credential.user)
   credentials!: Credential[];
 }

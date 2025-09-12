@@ -11,7 +11,7 @@ import {
 import type { Workflow } from './Workflow.js'; // Add 'type'
 import type { User } from './User.js'; // Add 'type'
 
-import { WorkflowNode, WorkflowConnection } from '../types/workflow'; // Assuming these are now in types/workflow.ts
+import type { WorkflowNode, WorkflowConnection } from '../types/workflow'; // Assuming these are now in types/workflow.ts
 
 // Types and Interfaces from Execution.ts
 export type ExecutionStatus = 'new' | 'running' | 'success' | 'error' | 'waiting' | 'canceled';
