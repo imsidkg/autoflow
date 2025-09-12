@@ -1,7 +1,8 @@
 import "reflect-metadata";
 import express from "express"
 import cors from "cors"
-import  authRoutes from "./routes/authRoutes"
+import authRoutes from "./routes/authRoutes"
+import workflowRoutes from "./routes/workflowRoutes"
 
 const app = express()
 
@@ -10,5 +11,6 @@ app.use(express.json());
 
 
 app.use(authRoutes)
+app.use(workflowRoutes)
 
 export default app;
