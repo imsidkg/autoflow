@@ -1,40 +1,42 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
-import { Workflow } from './Workflow';
-import { Execution } from './Execution';
-import { Credential } from './Credential';
+import type { Workflow } from './Workflow.js';
+import type { Execution } from './Execution.js';
+import type { Credential } from './Credential.js';
+
+
 
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column({ unique: true })
-  email: string;
+  email!: string;
 
   @Column()
-  firstName: string;
+  firstName!: string;
 
   @Column()
-  lastName: string;
+  lastName!: string;
 
   @Column()
-  passwordHash: string;
+  passwordHash!: string;
 
   @Column({ default: true })
-  isActive: boolean;
+  isActive!: boolean;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 
-  @OneToMany(() => Workflow, workflow => workflow.owner)
-  workflows: Workflow[];
+    @OneToMany('Workflow', (workflow: Workflow) => workflow.owner)
+  workflows!: Workflow[];
 
-  @OneToMany(() => Execution, execution => execution.user)
-  executions: Execution[];
+  @OneToMany('Execution', (execution: Execution) => execution.user)
+  executions!: Execution[];
 
-  @OneToMany(() => Credential, credential => credential.owner)
-  credentials: Credential[];
+  @OneToMany('Credential', (credential: Credential) => credential.user)
+  credentials!: Credential[];
 }
