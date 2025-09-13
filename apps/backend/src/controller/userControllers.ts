@@ -13,10 +13,10 @@ export const signup = async (req: Request, res: Response) => {
   }
 
   if (
-    typeof email !== 'string' ||
-    typeof password !== 'string' ||
-    typeof firstName !== 'string' ||
-    typeof lastName !== 'string'
+    typeof email !== "string" ||
+    typeof password !== "string" ||
+    typeof firstName !== "string" ||
+    typeof lastName !== "string"
   ) {
     return res.json({
       status: 400,
@@ -28,9 +28,12 @@ export const signup = async (req: Request, res: Response) => {
   const userRepository = dataSource.getRepository(User);
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  const existingUser = await userRepository.findOne({ where: { email } }); 
+  const existingUser = await userRepository.findOne({ where: { email } });
   if (existingUser) {
-    return res.json({ status: 499, message: "User with this email already exists" });
+    return res.json({
+      status: 499,
+      message: "User with this email already exists",
+    });
   }
 
   const newUser = new User();
@@ -42,7 +45,7 @@ export const signup = async (req: Request, res: Response) => {
 
   await userRepository.save(newUser);
 
-  const token = jwt.sign({ userId: newUser.email }, "super_secret", { 
+  const token = jwt.sign({ userId: newUser.email }, "super_secret", {
     expiresIn: "1h",
   });
   const { passwordHash, ...otherDetails } = newUser;
@@ -60,18 +63,20 @@ export const signin = async (req: Request, res: Response) => {
   const dataSource = await getAppDataSource();
   const userRepository = dataSource.getRepository(User);
   const user = await userRepository.findOne({ where: { email } });
-  if (!user) { 
-   return res.json({ status: 499, message: "User with this email does not exist" });
+  if (!user) {
+    return res.json({
+      status: 499,
+      message: "User with this email does not exist",
+    });
   }
 
   const isMatch = await bcrypt.compare(password, user.passwordHash);
   if (!isMatch) return res.status(401).json({ message: "Invalid credentials" });
 
-  const token = jwt.sign(
-    { id: user.id, email: user!.email },
-    'super_secret',
-    { expiresIn: "1h" } 
-  );
+  const token = jwt.sign({ id: user.id, email: user!.email }, "super_secret", {
+    expiresIn: "1h",
+  });
 
-  return res.status(200).json({ token });
+  const { id } = user;
+  return res.status(200).json({ token, id });
 };

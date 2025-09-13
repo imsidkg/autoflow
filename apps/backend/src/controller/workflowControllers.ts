@@ -3,7 +3,7 @@ import type { Request, Response } from "express";
 
 interface AuthRequest extends Request {
   user?: {
-    userId: string;
+    id: string;
     email: string;
   };
 }
@@ -18,7 +18,7 @@ export const createWorkflow = async (req: AuthRequest, res: Response) => {
     staticData,
     description,
   } = req.body;
-  const ownerId = req.user?.userId; 
+  const ownerId = req.user?.id;
   if (!name || !ownerId) {
     return res
       .status(400)
@@ -37,7 +37,7 @@ export const createWorkflow = async (req: AuthRequest, res: Response) => {
     newWorkflow.settings = settings || {};
     newWorkflow.staticData = staticData || {};
     newWorkflow.description = description || null;
-    newWorkflow.ownerId = ownerId; 
+    newWorkflow.ownerId = ownerId;
 
     await workflowRepository.save(newWorkflow);
 
@@ -50,7 +50,7 @@ export const createWorkflow = async (req: AuthRequest, res: Response) => {
 
 export const getWorkflowById = async (req: AuthRequest, res: Response) => {
   const { id } = req.params;
-  const ownerId = req.user?.userId; 
+  const ownerId = req.user?.id;
 
   if (!ownerId) {
     return res.status(401).json({ message: "Authentication required." });
@@ -59,11 +59,13 @@ export const getWorkflowById = async (req: AuthRequest, res: Response) => {
   try {
     const dataSource = await getAppDataSource();
     const workflowRepository = dataSource.getRepository(Workflow);
-  
+
     const workflow = await workflowRepository.findOneBy({ id, ownerId });
 
     if (!workflow) {
-      return res.status(404).json({ message: "Workflow not found or you do not have access." });
+      return res
+        .status(404)
+        .json({ message: "Workflow not found or you do not have access." });
     }
 
     return res.status(200).json(workflow);
@@ -84,7 +86,7 @@ export const updateWorkflow = async (req: AuthRequest, res: Response) => {
     staticData,
     description,
   } = req.body;
-  const ownerId = req.user?.userId; 
+  const ownerId = req.user?.id;
   if (!ownerId) {
     return res.status(401).json({ message: "Authentication required." });
   }
@@ -92,20 +94,28 @@ export const updateWorkflow = async (req: AuthRequest, res: Response) => {
   try {
     const dataSource = await getAppDataSource();
     const workflowRepository = dataSource.getRepository(Workflow);
-   
+
     let workflowToUpdate = await workflowRepository.findOneBy({ id, ownerId });
 
     if (!workflowToUpdate) {
-      return res.status(404).json({ message: "Workflow not found or you do not have access." });
+      return res
+        .status(404)
+        .json({ message: "Workflow not found or you do not have access." });
     }
 
     workflowToUpdate.name = name !== undefined ? name : workflowToUpdate.name;
-    workflowToUpdate.nodes = nodes !== undefined ? nodes : workflowToUpdate.nodes;
-    workflowToUpdate.connections = connections !== undefined ? connections : workflowToUpdate.connections;
-    workflowToUpdate.active = active !== undefined ? active : workflowToUpdate.active;
-    workflowToUpdate.settings = settings !== undefined ? settings : workflowToUpdate.settings;
-    workflowToUpdate.staticData = staticData !== undefined ? staticData : workflowToUpdate.staticData;
-    workflowToUpdate.description = description !== undefined ? description : workflowToUpdate.description;
+    workflowToUpdate.nodes =
+      nodes !== undefined ? nodes : workflowToUpdate.nodes;
+    workflowToUpdate.connections =
+      connections !== undefined ? connections : workflowToUpdate.connections;
+    workflowToUpdate.active =
+      active !== undefined ? active : workflowToUpdate.active;
+    workflowToUpdate.settings =
+      settings !== undefined ? settings : workflowToUpdate.settings;
+    workflowToUpdate.staticData =
+      staticData !== undefined ? staticData : workflowToUpdate.staticData;
+    workflowToUpdate.description =
+      description !== undefined ? description : workflowToUpdate.description;
 
     await workflowRepository.save(workflowToUpdate);
 
@@ -116,10 +126,8 @@ export const updateWorkflow = async (req: AuthRequest, res: Response) => {
   }
 };
 
-
 export const getWorkflowsByUserId = async (req: AuthRequest, res: Response) => {
-  const ownerId = req.user?.userId; 
-
+  const ownerId = req.user?.id;
   if (!ownerId) {
     return res.status(401).json({ message: "Authentication required." });
   }
@@ -127,7 +135,7 @@ export const getWorkflowsByUserId = async (req: AuthRequest, res: Response) => {
   try {
     const dataSource = await getAppDataSource();
     const workflowRepository = dataSource.getRepository(Workflow);
-    const workflows = await workflowRepository.findBy({ ownerId }); 
+    const workflows = await workflowRepository.findBy({ ownerId });
 
     return res.status(200).json(workflows);
   } catch (error) {

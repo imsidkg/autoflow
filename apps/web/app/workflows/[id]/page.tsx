@@ -21,8 +21,8 @@ interface WorkflowData {
   name: string;
   description?: string;
   nodes: Node[];
-  connections: Edge[]; // Backend uses 'connections', React Flow uses 'edges'
-  message?: string; // Added to handle error messages from API
+  connections: Edge[]; 
+  message?: string; 
 }
 
 export default function WorkflowDetailPage() {
@@ -37,7 +37,7 @@ export default function WorkflowDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Fetch workflow data
+  
   useEffect(() => {
     const fetchWorkflow = async () => {
       const token = localStorage.getItem("token");
@@ -58,7 +58,7 @@ export default function WorkflowDetailPage() {
           setWorkflowName(data.name);
           setWorkflowDescription(data.description || "");
           setNodes(data.nodes || []);
-          setEdges(data.connections || []); // Map backend 'connections' to frontend 'edges'
+          setEdges(data.connections || []); 
         } else {
           setError(data.message || "Failed to fetch workflow.");
           if (response.status === 401 || response.status === 403) {
@@ -78,7 +78,7 @@ export default function WorkflowDetailPage() {
     }
   }, [workflowId, router]);
 
-  // Save workflow data
+ 
   const handleSaveWorkflow = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -90,7 +90,7 @@ export default function WorkflowDetailPage() {
       name: workflowName,
       description: workflowDescription,
       nodes: nodes,
-      connections: edges, // Map frontend 'edges' back to backend 'connections'
+      connections: edges, 
     };
 
     try {

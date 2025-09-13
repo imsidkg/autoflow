@@ -29,7 +29,7 @@ export default function NewWorkflowPage() {
     }
 
     try {
-      const response = await fetch("http://localhost:3002/workflow", {
+      const response = await fetch("http://localhost:3002/workflows/workflow", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

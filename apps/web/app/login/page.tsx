@@ -25,13 +25,13 @@ export default function LoginPage() {
         },
         body: JSON.stringify({ email, password }),
       });
-
       const data = await response.json();
-
+      console.log(data)
       if (response.ok) {
         localStorage.setItem("token", data.token);
-        localStorage.setItem("userId", data.user.id);
+        localStorage.setItem("userId", data.id);
         router.push("/workflows");
+        
       } else {
         setError(data.message || "Login failed.");
       }
