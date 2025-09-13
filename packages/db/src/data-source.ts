@@ -24,7 +24,7 @@ export async function getAppDataSource(): Promise<DataSource> {
     username: process.env.DB_USERNAME || "postgres",
     password: process.env.DB_PASSWORD || "password",
     database: process.env.DB_NAME || "workflow_automation",
-    synchronize: process.env.NODE_ENV !== "production", // Only for development
+    synchronize: false, // Temporarily disabled for debugging persistence issue
     logging: process.env.NODE_ENV === "development",
     entities: [
       User,

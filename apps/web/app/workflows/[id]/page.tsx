@@ -4,11 +4,12 @@ import { useState, useCallback, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import {
   ReactFlow,
-  applyNodeChanges,
-  applyEdgeChanges,
   addEdge,
   Node,
   Edge,
+  useNodesState,
+  useEdgesState,
+  Controls,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { Button } from "@/components/ui/button";
@@ -21,8 +22,8 @@ interface WorkflowData {
   name: string;
   description?: string;
   nodes: Node[];
-  connections: Edge[]; 
-  message?: string; 
+  connections: Edge[];
+  message?: string;
 }
 
 export default function WorkflowDetailPage() {
@@ -32,12 +33,11 @@ export default function WorkflowDetailPage() {
 
   const [workflowName, setWorkflowName] = useState("");
   const [workflowDescription, setWorkflowDescription] = useState("");
-  const [nodes, setNodes] = useState<Node[]>([]);
-  const [edges, setEdges] = useState<Edge[]>([]);
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  
   useEffect(() => {
     const fetchWorkflow = async () => {
       const token = localStorage.getItem("token");
@@ -47,18 +47,27 @@ export default function WorkflowDetailPage() {
       }
 
       try {
-        const response = await fetch(`http://localhost:3002/workflows/${workflowId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await fetch(
+          `http://localhost:3002/workflows/${workflowId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         const data: WorkflowData = await response.json();
 
         if (response.ok) {
           setWorkflowName(data.name);
           setWorkflowDescription(data.description || "");
-          setNodes(data.nodes || []);
-          setEdges(data.connections || []); 
+          const transformedNodes = (data.nodes || []).map((node: any) => ({
+            ...node,
+            position: Array.isArray(node.position)
+              ? { x: node.position[0], y: node.position[1] }
+              : node.position,
+          }));
+          setNodes(transformedNodes);
+          setEdges(Array.isArray(data.connections) ? data.connections : []);
         } else {
           setError(data.message || "Failed to fetch workflow.");
           if (response.status === 401 || response.status === 403) {
@@ -76,9 +85,8 @@ export default function WorkflowDetailPage() {
     if (workflowId) {
       fetchWorkflow();
     }
-  }, [workflowId, router]);
+  }, [workflowId, router, setNodes, setEdges]);
 
- 
   const handleSaveWorkflow = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -86,22 +94,30 @@ export default function WorkflowDetailPage() {
       return;
     }
 
+    const transformedNodes = nodes.map((node) => ({
+      ...node,
+      position: [node.position.x, node.position.y],
+    }));
+
     const workflowData: Partial<WorkflowData> = {
       name: workflowName,
       description: workflowDescription,
-      nodes: nodes,
-      connections: edges, 
+      nodes: transformedNodes as any,
+      connections: edges,
     };
 
     try {
-      const response = await fetch(`http://localhost:3002/workflows/${workflowId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(workflowData),
-      });
+      const response = await fetch(
+        `http://localhost:3002/workflows/${workflowId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(workflowData),
+        }
+      );
 
       const data = await response.json();
 
@@ -119,25 +135,25 @@ export default function WorkflowDetailPage() {
     }
   };
 
-  const onNodesChange = useCallback(
-    (changes: any) => setNodes((nds) => applyNodeChanges(changes, nds)),
-    []
-  );
-  const onEdgesChange = useCallback(
-    (changes: any) => setEdges((eds) => applyEdgeChanges(changes, eds)),
-    []
-  );
   const onConnect = useCallback(
     (params: any) => setEdges((eds) => addEdge(params, eds)),
-    []
+    [setEdges]
   );
 
   if (loading) {
-    return <div className="flex justify-center items-center h-screen">Loading workflow...</div>;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        Loading workflow...
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="flex justify-center items-center h-screen text-red-500">Error: {error}</div>;
+    return (
+      <div className="flex justify-center items-center h-screen text-red-500">
+        Error: {error}
+      </div>
+    );
   }
 
   return (
@@ -150,7 +166,12 @@ export default function WorkflowDetailPage() {
         <div className="w-1/4 p-4 border-r">
           <h2 className="text-xl font-semibold mb-4">Workflow Details</h2>
           <div className="mb-4">
-            <Label htmlFor="workflowName" className="block text-sm font-medium text-gray-700">Name</Label>
+            <Label
+              htmlFor="workflowName"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Name
+            </Label>
             <Input
               id="workflowName"
               type="text"
@@ -160,7 +181,12 @@ export default function WorkflowDetailPage() {
             />
           </div>
           <div className="mb-4">
-            <Label htmlFor="workflowDescription" className="block text-sm font-medium text-gray-700">Description</Label>
+            <Label
+              htmlFor="workflowDescription"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Description
+            </Label>
             <Textarea
               id="workflowDescription"
               value={workflowDescription}
@@ -178,9 +204,11 @@ export default function WorkflowDetailPage() {
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
-            fitView
             className="react-flow-canvas"
+            style={{ width: '100%', height: '100%' }}
+            fitView
           >
+            <Controls />
             {/* You can add custom nodes, controls, etc. here */}
           </ReactFlow>
         </div>

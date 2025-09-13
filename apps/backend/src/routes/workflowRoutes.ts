@@ -10,7 +10,7 @@ const router = Router();
 
 router.post("/workflow", createWorkflow);
 router.get("/:id", getWorkflowById);
-router.put("/workflows/:id", updateWorkflow);
+router.put("/:id", updateWorkflow);
 router.get("/", getWorkflowsByUserId);
 
 export default router;

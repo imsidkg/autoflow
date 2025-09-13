@@ -18,7 +18,7 @@ export class Workflow {
   nodes!: WorkflowNode[];
 
   @Column({ type: 'jsonb' })
-  connections!: WorkflowConnection;
+  connections!: WorkflowConnection[];
 
   @Column({ default: false })
   active!: boolean;
