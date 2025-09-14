@@ -1,15 +1,26 @@
-"use client";
+'use client';
 
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 type Credential = {
   id: string;
   type: string;
-  name: string;
+  name:string;
   data: any;
 };
 
@@ -34,6 +45,17 @@ const CredentialsPage = () => {
 
     fetchCredentials();
   }, []);
+
+  const handleDelete = async (credentialId: string) => {
+    try {
+      await axios.delete(`http://localhost:3002/credentials/${credentialId}`, {
+        withCredentials: true,
+      });
+      setCredentials(credentials.filter((c) => c.id !== credentialId));
+    } catch (err) {
+      setError('Failed to delete credential.');
+    }
+  };
 
   if (loading) {
     return <div className="flex justify-center items-center h-screen">Loading...</div>;
@@ -60,6 +82,29 @@ const CredentialsPage = () => {
             <CardContent>
               <p className="text-sm text-gray-500">{cred.type}</p>
             </CardContent>
+            <CardFooter className="flex justify-end gap-2">
+                <Button asChild variant="outline">
+                    <Link href={`/credentials/${cred.id}/edit`}>Edit</Link>
+                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive">Delete</Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. This will permanently delete your
+                        credential and remove your data from our servers.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => handleDelete(cred.id)}>Continue</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+            </CardFooter>
           </Card>
         ))}
       </div>

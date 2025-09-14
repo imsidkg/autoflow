@@ -65,8 +65,7 @@ export const getCredentialById = async (req: AuthRequest, res: Response) => {
       return res
         .status(500)
         .json({ message: "Credential with specific ID not found" });
-    const { data, ...otherDetails } = credential;
-    return res.status(200).json(otherDetails);
+    return res.status(200).json(credential);
   } catch (error) {
     console.error("Error fetching credential by ID:", error);
     return res.status(404).json({
