@@ -66,9 +66,7 @@ export const getCredentialById = async (req: AuthRequest, res: Response) => {
         .status(500)
         .json({ message: "Credential with specific ID not found" });
     const { data, ...otherDetails } = credential;
-    return res.status(200).json({
-      otherDetails,
-    });
+    return res.status(200).json(otherDetails);
   } catch (error) {
     console.error("Error fetching credential by ID:", error);
     return res.status(404).json({
@@ -129,7 +127,7 @@ export const updateCredential = async (req: AuthRequest, res: Response) => {
     });
   } catch (error) {
     console.error("Error updating credential:", error);
-    return res.status(500).json({
+    return res.status(404).json({
       message: "Failed to update credential due to a server error.",
     });
   }
@@ -172,6 +170,33 @@ export const deleteCredential = async (req: AuthRequest, res: Response) => {
     console.error("Error deleting credential:", error);
     return res.status(500).json({
       message: "Failed to delete credential due to a server error.",
+    });
+  }
+};
+export const getCredentials = async (req: AuthRequest, res: Response) => {
+  const ownerId = req.user?.id;
+  if (!ownerId) {
+    return res.status(403).json({ message: "Unauthorized" });
+  }
+
+  try {
+    const dataSource = await getAppDataSource();
+    const credentialsRepository = dataSource.getRepository(Credential);
+
+    const credentials = await credentialsRepository.find({
+      where: { user: { id: ownerId } },
+    });
+
+    const safeCredentials = credentials.map(({ data, ...rest }) => rest);
+
+    return res.status(200).json({
+      message: "Credentials fetched successfully",
+      credentials: safeCredentials,
+    });
+  } catch (error) {
+    console.error("Error fetching credentials:", error);
+    return res.status(500).json({
+      message: "Failed to fetch credentials due to a server error.",
     });
   }
 };
