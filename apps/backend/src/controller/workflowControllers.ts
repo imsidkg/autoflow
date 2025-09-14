@@ -68,13 +68,6 @@ export const getWorkflowById = async (req: AuthRequest, res: Response) => {
         .json({ message: "Workflow not found or you do not have access." });
     }
 
-    // --- ADD THIS LOG ---
-    console.log(`[Backend] Fetching workflow ID: ${id}`);
-    console.log(`[Backend] Workflow nodes type: ${typeof workflow.nodes}`);
-    console.log(`[Backend] Workflow nodes value:`, workflow.nodes);
-    console.log(`[Backend] Workflow connections type: ${typeof workflow.connections}`);
-    console.log(`[Backend] Workflow connections value:`, workflow.connections);
-    // --- END ADD LOG ---
 
     return res.status(200).json(workflow);
   } catch (error) {
@@ -111,24 +104,16 @@ export const updateWorkflow = async (req: AuthRequest, res: Response) => {
         .json({ message: "Workflow not found or you do not have access." });
     }
 
-    // --- ADD THESE LOGS ---
-    console.log(`[Backend] Updating workflow ID: ${id}`);
-    console.log(`[Backend] Received nodes:`, nodes);
-    console.log(`[Backend] Received connections:`, connections);
-    // --- END ADD LOGS ---
-
+  
     workflowToUpdate.name = name !== undefined ? name : workflowToUpdate.name;
 
-    // --- MODIFIED LINES ---
-    // A more robust way to ensure TypeORM detects changes in jsonb columns
-    // is to create a deep copy of the array/object.
     if (nodes !== undefined) {
       workflowToUpdate.nodes = JSON.parse(JSON.stringify(nodes));
     }
     if (connections !== undefined) {
       workflowToUpdate.connections = JSON.parse(JSON.stringify(connections));
     }
-    // --- END MODIFIED LINES ---
+   
 
     workflowToUpdate.active =
       active !== undefined ? active : workflowToUpdate.active;
@@ -139,14 +124,10 @@ export const updateWorkflow = async (req: AuthRequest, res: Response) => {
     workflowToUpdate.description =
       description !== undefined ? description : workflowToUpdate.description;
 
-    // --- ADD THIS LOG ---
-    console.log(`[Backend] Saving workflow with updated nodes:`, workflowToUpdate.nodes);
-    console.log(`[Backend] Saving workflow with updated connections:`, workflowToUpdate.connections);
-    // --- END ADD LOGS ---
+
 
     await workflowRepository.save(workflowToUpdate);
-    console.log(`[Backend] Workflow ID: ${id} saved successfully.`); // ADD THIS LOG
-
+    console.log(`[Backend] Workflow ID: ${id} saved successfully.`); 
     return res.status(200).json(workflowToUpdate);
   } catch (error) {
     console.error("Error updating workflow:", error);

@@ -16,6 +16,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import CustomNode from "@/components/CustomNode";
+
+const nodeTypes = {
+  custom: CustomNode,
+};
 
 interface WorkflowData {
   id: string;
@@ -37,6 +42,52 @@ export default function WorkflowDetailPage() {
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const onAddNode = useCallback(
+    (sourceNodeId: string) => {
+      setNodes((nds) => {
+        const sourceNode = nds.find((node) => node.id === sourceNodeId);
+        if (!sourceNode) {
+          return nds;
+        }
+
+        const newNodeId = `node_${new Date().getTime()}`;
+        const newNode: Node = {
+          id: newNodeId,
+          type: "custom",
+          position: {
+            x: sourceNode.position.x,
+            y: sourceNode.position.y + 200,
+          },
+          data: {
+            label: `New Node`,
+            onAddNode: onAddNode,
+          },
+        };
+
+        const newEdge: Edge = {
+          id: `e${sourceNodeId}-${newNodeId}`,
+          source: sourceNodeId,
+          target: newNodeId,
+        };
+
+        setEdges((eds) => addEdge(newEdge, eds));
+        return [...nds, newNode];
+      });
+    },
+    [setNodes, setEdges]
+  );
+
+  const addFirstNode = useCallback(() => {
+    const newNodeId = "node_1";
+    const newNode: Node = {
+      id: newNodeId,
+      type: "custom",
+      position: { x: 250, y: 5 },
+      data: { label: "Start", onAddNode: onAddNode },
+    };
+    setNodes([newNode]);
+  }, [setNodes, onAddNode]);
 
   useEffect(() => {
     const fetchWorkflow = async () => {
@@ -60,13 +111,22 @@ export default function WorkflowDetailPage() {
         if (response.ok) {
           setWorkflowName(data.name);
           setWorkflowDescription(data.description || "");
-          const transformedNodes = (data.nodes || []).map((node: any) => ({
-            ...node,
-            position: Array.isArray(node.position)
-              ? { x: node.position[0], y: node.position[1] }
-              : node.position,
-          }));
-          setNodes(transformedNodes);
+          if (data.nodes && data.nodes.length > 0) {
+            const transformedNodes = (data.nodes || []).map((node: any) => ({
+              ...node,
+              type: "custom",
+              position: Array.isArray(node.position)
+                ? { x: node.position[0], y: node.position[1] }
+                : node.position,
+              data: {
+                ...node.data,
+                onAddNode: onAddNode,
+              },
+            }));
+            setNodes(transformedNodes);
+          } else {
+            setNodes([]);
+          }
           setEdges(Array.isArray(data.connections) ? data.connections : []);
         } else {
           setError(data.message || "Failed to fetch workflow.");
@@ -85,7 +145,7 @@ export default function WorkflowDetailPage() {
     if (workflowId) {
       fetchWorkflow();
     }
-  }, [workflowId, router, setNodes, setEdges]);
+  }, [workflowId, router, setNodes, setEdges, onAddNode]);
 
   const handleSaveWorkflow = async () => {
     const token = localStorage.getItem("token");
@@ -197,15 +257,21 @@ export default function WorkflowDetailPage() {
           </div>
           {/* Add more workflow properties here */}
         </div>
-        <div className="flex-grow">
+        <div className="flex-grow relative">
+          {nodes.length === 0 && (
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+              <Button onClick={addFirstNode}>Add First Node</Button>
+            </div>
+          )}
           <ReactFlow
             nodes={nodes}
             edges={edges}
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
+            nodeTypes={nodeTypes}
             className="react-flow-canvas"
-            style={{ width: '100%', height: '100%' }}
+            style={{ width: "100%", height: "100%" }}
             fitView
           >
             <Controls />
