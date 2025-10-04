@@ -1,4 +1,4 @@
-import { getAppDataSource, Workflow } from "@repo/db";
+import { getAppDataSource, Workflow, Execution } from "@repo/db";
 import type { Request, Response } from "express";
 
 interface AuthRequest extends Request {
@@ -68,7 +68,6 @@ export const getWorkflowById = async (req: AuthRequest, res: Response) => {
         .json({ message: "Workflow not found or you do not have access." });
     }
 
-
     return res.status(200).json(workflow);
   } catch (error) {
     console.error("Error fetching workflow:", error);
@@ -104,7 +103,6 @@ export const updateWorkflow = async (req: AuthRequest, res: Response) => {
         .json({ message: "Workflow not found or you do not have access." });
     }
 
-  
     workflowToUpdate.name = name !== undefined ? name : workflowToUpdate.name;
 
     if (nodes !== undefined) {
@@ -113,7 +111,6 @@ export const updateWorkflow = async (req: AuthRequest, res: Response) => {
     if (connections !== undefined) {
       workflowToUpdate.connections = JSON.parse(JSON.stringify(connections));
     }
-   
 
     workflowToUpdate.active =
       active !== undefined ? active : workflowToUpdate.active;
@@ -124,10 +121,8 @@ export const updateWorkflow = async (req: AuthRequest, res: Response) => {
     workflowToUpdate.description =
       description !== undefined ? description : workflowToUpdate.description;
 
-
-
     await workflowRepository.save(workflowToUpdate);
-    console.log(`[Backend] Workflow ID: ${id} saved successfully.`); 
+    console.log(`[Backend] Workflow ID: ${id} saved successfully.`);
     return res.status(200).json(workflowToUpdate);
   } catch (error) {
     console.error("Error updating workflow:", error);
@@ -150,5 +145,55 @@ export const getWorkflowsByUserId = async (req: AuthRequest, res: Response) => {
   } catch (error) {
     console.error("Error fetching workflows by user ID:", error);
     return res.status(500).json({ message: "Failed to fetch workflows." });
+  }
+};
+
+export const executeWorkflow = async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const ownerId = req.user?.id;
+    if (!ownerId) {
+      return res.status(401).json({ messsage: "Authentication Required" });
+    }
+
+    const dataSource = await getAppDataSource();
+    const workflowRepository = dataSource.getRepository(Workflow);
+    const workflow = await workflowRepository.findOneBy({ id, ownerId });
+
+    if (!workflow)
+      return res
+        .status(404)
+        .json({ message: "Workflow not found or you do not have access." });
+
+    const executionRepository = dataSource.getRepository(Execution);
+    const newExecution = new Execution();
+    newExecution.workflowId = workflow.id;
+    newExecution.userId = ownerId;
+    newExecution.status = "new";
+    newExecution.workflowData = {
+      id: workflow.id,
+      name: workflow.name,
+      nodes: workflow.nodes,
+      connections: workflow.connections,
+      settings: workflow.settings,
+      staticData: workflow.staticData,
+    };
+
+    newExecution.data = {
+      startData: {},
+      resultData: {
+        runData: {},
+      },
+    };
+    newExecution.mode = "manual";
+
+    return res.status(202).json({
+      message: "Workflow execution started",
+      executionId: newExecution.id,
+    });
+  } catch (error) {
+    console.error("Error executing workflow:", error);
+    return res.status(500).json({ message: "Failed to execute workflow." });
   }
 };
