@@ -7,7 +7,7 @@
     "@types/bun": "latest"
   },
   "scripts": {
-    "start": "tsc && bun run dist/index.js",
+    "start": "tsc && bun run dist/index.js & bun src/worker.ts",
     "build": "tsc"
   },
   "peerDependencies": {

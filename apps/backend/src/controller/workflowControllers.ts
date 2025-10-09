@@ -1,5 +1,9 @@
 import { getAppDataSource, Workflow, Execution } from "@repo/db";
 import type { Request, Response } from "express";
+import Redis from "ioredis";
+
+const redis = new Redis(process.env.REDIS_URL || "redis://localhost:6379");
+const QUEUE_NAME = "workflow-execution-queue";
 
 interface AuthRequest extends Request {
   user?: {
@@ -130,7 +134,10 @@ export const updateWorkflow = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export const getWorkflowsByUserId = async (req: AuthRequest, res: Response) => {
+export const getWorkflowsByUserId = async (
+  req: AuthRequest,
+  res: Response
+) => {
   const ownerId = req.user?.id;
   if (!ownerId) {
     return res.status(401).json({ message: "Authentication required." });
@@ -186,10 +193,15 @@ export const executeWorkflow = async (req: AuthRequest, res: Response) => {
         runData: {},
       },
     };
-    newExecution.mode = "manual";
+    newExecution.mode = { mode: 'manual' };
+
+    await executionRepository.save(newExecution);
+
+    // Push the execution ID to the Redis queue for the worker to pick up
+    await redis.rpush(QUEUE_NAME, newExecution.id);
 
     return res.status(202).json({
-      message: "Workflow execution started",
+      message: "Workflow execution has been queued.",
       executionId: newExecution.id,
     });
   } catch (error) {
@@ -197,3 +209,4 @@ export const executeWorkflow = async (req: AuthRequest, res: Response) => {
     return res.status(500).json({ message: "Failed to execute workflow." });
   }
 };
+

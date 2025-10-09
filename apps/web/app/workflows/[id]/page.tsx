@@ -195,6 +195,40 @@ export default function WorkflowDetailPage() {
     }
   };
 
+  const handleExecuteWorkflow = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      router.push("/login");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `http://localhost:3002/workflows/${workflowId}/run`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert(`Workflow execution started with ID: ${data.executionId}`);
+      } else {
+        setError(data.message || "Failed to execute workflow.");
+        if (response.status === 401 || response.status === 403) {
+          router.push("/login");
+        }
+      }
+    } catch (err) {
+      console.error("Error executing workflow:", err);
+      setError("An unexpected error occurred while executing the workflow.");
+    }
+  };
+
   const onConnect = useCallback(
     (params: any) => setEdges((eds) => addEdge(params, eds)),
     [setEdges]
@@ -220,7 +254,10 @@ export default function WorkflowDetailPage() {
     <div className="flex flex-col h-screen">
       <div className="p-4 border-b flex items-center justify-between">
         <h1 className="text-2xl font-bold">Edit Workflow: {workflowName}</h1>
-        <Button onClick={handleSaveWorkflow}>Save Workflow</Button>
+        <div>
+          <Button onClick={handleExecuteWorkflow} className="mr-2">Execute Workflow</Button>
+          <Button onClick={handleSaveWorkflow}>Save Workflow</Button>
+        </div>
       </div>
       <div className="flex flex-grow">
         <div className="w-1/4 p-4 border-r">
