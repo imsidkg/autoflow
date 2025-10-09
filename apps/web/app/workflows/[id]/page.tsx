@@ -20,6 +20,8 @@ import CustomNode from "@/components/CustomNode";
 
 const nodeTypes = {
   custom: CustomNode,
+  trigger: CustomNode,
+  input: CustomNode,
 };
 
 interface WorkflowData {
@@ -82,7 +84,7 @@ export default function WorkflowDetailPage() {
     const newNodeId = "node_1";
     const newNode: Node = {
       id: newNodeId,
-      type: "custom",
+      type: "trigger",
       position: { x: 250, y: 5 },
       data: { label: "Start", onAddNode: onAddNode },
     };
@@ -113,8 +115,6 @@ export default function WorkflowDetailPage() {
           setWorkflowDescription(data.description || "");
           if (data.nodes && data.nodes.length > 0) {
             const transformedNodes = (data.nodes || []).map((node: any) => ({
-              ...node,
-              type: "custom",
               position: Array.isArray(node.position)
                 ? { x: node.position[0], y: node.position[1] }
                 : node.position,
