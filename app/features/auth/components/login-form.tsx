@@ -38,7 +38,7 @@ const loginSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 const LoginForm = () => {
-  const router = useRouter()
+  const router = useRouter();
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -48,9 +48,8 @@ const LoginForm = () => {
   });
 
   const onSubmit = async (values: LoginFormValues) => {
-    await authClient.signUp.email(
+    await authClient.signIn.email(
       {
-        name: values.password,
         email: values.email,
         password: values.password,
         callbackURL: "/",
