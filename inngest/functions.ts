@@ -18,6 +18,11 @@ export const execute = inngest.createFunction(
         model: google("gemini-2.5-flash"),
         system: "You are a helpful assistant",
         prompt: "What is 2+2?",
+        experimental_telemetry: {
+          isEnabled: true,
+          recordInputs: true,
+          recordOutputs: true,
+        },
       }
     );
     const { steps: openAISteps } = await step.ai.wrap(
@@ -30,7 +35,7 @@ export const execute = inngest.createFunction(
       }
     );
     const { steps: anthropicSteps } = await step.ai.wrap(
-      "gemini-generate-text",
+      "anthropic-generate-text",
       generateText,
       {
         model: anthropic("claude-sonnet-4-0"),
@@ -38,6 +43,6 @@ export const execute = inngest.createFunction(
         prompt: "What is 2+2?",
       }
     );
-    return { geminiSteps, openAISteps, anthropic };
+    return { geminiSteps, openAISteps, anthropicSteps };
   }
 );

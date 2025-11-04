@@ -1,0 +1,8 @@
+{
+  "servers": {
+    "Sentry": {
+      "url": "https://mcp.sentry.dev/mcp/personal-c3t/autoflow",
+      "type": "http"
+    }
+  }
+}
