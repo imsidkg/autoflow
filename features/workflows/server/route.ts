@@ -4,6 +4,7 @@ import z from "zod";
 import { queryKeys } from "inngest";
 
 export const workflowsRouter = createTRPCRouter({
+  // for this change protectedProcedure to protected after integrating better auth
   create: protectedProcedure.mutation(({ ctx }) => {
     return prisma.workflow.create({
       data: {
