@@ -26,7 +26,7 @@ export const WorkflowsHeader = ({ disabled }: { disabled?: Boolean }) => {
   );
 };
 
-export const workflowContainer = ({
+export const WorkflowsContainer = ({
   children,
 }: {
   children: React.ReactNode;
