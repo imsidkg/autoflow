@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { useSuspenseWorkflow } from "../hooks/use-workflow";
+import { useCreateWorkflow, useSuspenseWorkflow } from "../hooks/use-workflow";
 import EntityHeader, { EntitiyContainer } from "@/components/entity-components";
 
 type Props = {};
@@ -13,6 +13,16 @@ const WorkflowsList = (props: Props) => {
 export default WorkflowsList;
 
 export const WorkflowsHeader = ({ disabled }: { disabled?: Boolean }) => {
+
+  const createWorkflow = useCreateWorkflow()
+
+  const handleCreate = () => {
+    createWorkflow.mutate(undefined , {
+      onError : () => {
+        
+      }
+    })
+  }
   return (
     <div>
       <EntityHeader

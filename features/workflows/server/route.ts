@@ -1,6 +1,7 @@
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import prisma from "@/lib/db";
 import z from "zod";
+import { queryKeys } from "inngest";
 
 export const workflowsRouter = createTRPCRouter({
   create: protectedProcedure.mutation(({ ctx }) => {
@@ -61,6 +62,7 @@ export const workflowsRouter = createTRPCRouter({
       });
     }),
   getMany: protectedProcedure.query(({ ctx }) => {
+    queryKeys : ['fadaf'] 
     return prisma.workflow.findMany({
       where: {
         userId: ctx.auth.user.id,
