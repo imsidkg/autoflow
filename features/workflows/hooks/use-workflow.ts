@@ -7,7 +7,7 @@ import {
 import { toast } from "sonner";
 import { useWorkflowParams } from "./use-workflows-params";
 
-export const useSuspenseWorkflow = () => {
+export const useSuspenseWorkflows = () => {
   const trpc = useTRPC();
   const [params] = useWorkflowParams();
   return useSuspenseQuery(trpc.workflows.getMany.queryOptions(params));
@@ -47,4 +47,9 @@ export const useRemoveWorkflow = () => {
       },
     })
   );
+};
+
+export const useSuspenseWorkflow = (id:string) => {
+  const trpc = useTRPC();
+  return useSuspenseQuery(trpc.workflows.getOne.queryOptions({id}));
 };
