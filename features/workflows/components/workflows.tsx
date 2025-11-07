@@ -2,7 +2,9 @@
 import React from "react";
 import { useCreateWorkflow, useSuspenseWorkflow } from "../hooks/use-workflow";
 import EntityHeader, {
+  EmptyView,
   EntitiyContainer,
+  EntityList,
   EntityPagination,
   EntitySearch,
   ErrorView,
@@ -32,7 +34,15 @@ export const WorkflowsSearch = () => {
 
 const WorkflowsList = (props: Props) => {
   const workflows = useSuspenseWorkflow();
-  return <div>{JSON.stringify(workflows.data, null, 2)}</div>;
+
+  return (
+    <EntityList
+      items={workflows.data.items}
+      getKey={(workflow) => workflow.id}
+      renderItem={(workflow) => <p>{workflow.name}</p>}
+      emptyView={<WorkflowsEmpty />}
+    />
+  );
 };
 
 export default WorkflowsList;
@@ -81,11 +91,11 @@ export const WorkflowsPagination = () => {
 };
 
 export const WorkflowsLoading = () => {
-  return <LoadingView entity="workflows"/>
-}
+  return <LoadingView entity="workflows" />;
+};
 export const WorkflowsError = () => {
-  return <ErrorView message="Error loading workflows"/>
-}
+  return <ErrorView message="Error loading workflows" />;
+};
 
 export const WorkflowsContainer = ({
   children,
@@ -100,5 +110,28 @@ export const WorkflowsContainer = ({
     >
       {children}
     </EntitiyContainer>
+  );
+};
+
+const WorkflowsEmpty = () => {
+  const createWorkflow = useCreateWorkflow();
+  const { handleError, modal } = useUpgradeModal();
+
+  const handleCreate = () => {
+    createWorkflow.mutate(undefined, {
+      onError: (error) => {
+        handleError(error);
+      },
+    });
+  };
+
+  return (
+    <>
+      {modal}
+      <EmptyView
+        message="You haven't created any workflows yet. Get started by creating your first workflow"
+        onNew={handleCreate}
+      />
+    </>
   );
 };
