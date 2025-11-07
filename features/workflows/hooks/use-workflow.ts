@@ -55,7 +55,7 @@ export const useSuspenseWorkflow = (id: string) => {
   return useSuspenseQuery(trpc.workflows.getOne.queryOptions({ id }));
 };
 
-export const useUpdateWorkflow = () => {
+export const useUpdateWorkflowName = () => {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
 
