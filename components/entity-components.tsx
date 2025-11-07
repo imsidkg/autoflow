@@ -80,11 +80,42 @@ export const EntitiyContainer = ({
       <div className="mx-auto max-w-screen-xl w-full flex flex-col gap-y-8 h-full">
         {header}
 
-      <div className="flex flex-col gap-y-4 h-full">
-        {search} {children}
-      </div>
-      {pagination}
+        <div className="flex flex-col gap-y-4 h-full">
+          {search} {children}
+        </div>
+        {pagination}
       </div>
     </div>
   );
+};
+
+import { Input } from "@/components/ui/input";
+import { Search as SearchIcon } from "lucide-react";
+
+interface EntitySearchProps {
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  next?: () => void; // ✅ new prop added
+}
+
+export const EntitySearch = ({
+  value,
+  onChange,
+  placeholder = "Search",
+}: EntitySearchProps) => {
+  return (
+    <div className="relative ml-auto">
+      <SearchIcon className="size-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+
+      <Input
+        className="max-w-[200px] bg-background shadow-none border-border pl-8"
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => {
+          onChange(e.target.value);
+        }}
+      />
+    </div>
+  );  
 };

@@ -1,11 +1,24 @@
 "use client";
 import React from "react";
 import { useCreateWorkflow, useSuspenseWorkflow } from "../hooks/use-workflow";
-import EntityHeader, { EntitiyContainer } from "@/components/entity-components";
+import EntityHeader, {
+  EntitiyContainer,
+  EntitySearch,
+} from "@/components/entity-components";
 import { useUpgradeModal } from "@/hooks/use-upgrade-modal";
 import { useRouter } from "next/navigation";
 
 type Props = {};
+
+export const WorkflowsSearch = () => {
+  return (
+    <EntitySearch
+      value={""}
+      onChange={() => {}}
+      placeholder="Search workflows"
+    />
+  );
+};
 
 const WorkflowsList = (props: Props) => {
   const workflows = useSuspenseWorkflow();
@@ -15,19 +28,18 @@ const WorkflowsList = (props: Props) => {
 export default WorkflowsList;
 
 export const WorkflowsHeader = ({ disabled }: { disabled?: Boolean }) => {
-  const router = useRouter()
+  const router = useRouter();
   const createWorkflow = useCreateWorkflow();
   const { handleError, modal } = useUpgradeModal();
   const handleCreate = () => {
     createWorkflow.mutate(undefined, {
       onError: (error) => {
-        
         handleError(error);
         console.error(error);
       },
       onSuccess: (data) => {
-        router.push(`/workflows/${data.id}`)
-      }
+        router.push(`/workflows/${data.id}`);
+      },
     });
   };
   return (
@@ -52,7 +64,7 @@ export const WorkflowsContainer = ({
   return (
     <EntitiyContainer
       header={<WorkflowsHeader />}
-      search={<></>}
+      search={<WorkflowsSearch />}
       pagination={<></>}
     >
       {children}
