@@ -1,19 +1,69 @@
 "use client";
+
+import { useState, useCallback } from "react";
+import {
+  ReactFlow,
+  applyNodeChanges,
+  applyEdgeChanges,
+  addEdge,
+  type Node,
+  type Edge,
+  type NodeChange,
+  type EdgeChange,
+  type Connection,
+} from "@xyflow/react";
+
 import { ErrorView, LoadingView } from "@/components/entity-components";
 import { useSuspenseWorkflow } from "@/features/workflows/hooks/use-workflow";
-type Props = {};
 
-export const EditorLoading = () => {
-  return <LoadingView message="Loading editor" />;
-};
+const initialNodes: Node[] = [
+  {
+    id: "n1",
+    position: { x: 0, y: 0 },
+    data: { label: "Node 1" },
+  },
+  {
+    id: "n2",
+    position: { x: 0, y: 100 },
+    data: { label: "Node 2" },
+  },
+];
 
-export const EditorError = () => {
-  return <ErrorView message="Error loading editor" />;
-};
+const initialEdges: Edge[] = [{ id: "n1-n2", source: "n1", target: "n2" }];
 
-const Editor = ({ workflowId }: { workflowId: string }) => {
+export const Editor = ({ workflowId }: { workflowId: string }) => {
   const { data: workflow } = useSuspenseWorkflow(workflowId);
-  return <p>{JSON.stringify(workflow, null, 2)}</p>;
-};
 
-export default Editor;
+  const [nodes, setNodes] = useState<Node[]>(initialNodes);
+  const [edges, setEdges] = useState<Edge[]>(initialEdges);
+
+  const onNodesChange = useCallback(
+    (changes: NodeChange[]) =>
+      setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)),
+    []
+  );
+
+  const onEdgesChange = useCallback(
+    (changes: EdgeChange[]) =>
+      setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)),
+    []
+  );
+
+  const onConnect = useCallback(
+    (params: Connection) =>
+      setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot)),
+    []
+  );
+
+  return (
+    <>
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onConnect={onConnect}
+      />
+    </>
+  );
+};
