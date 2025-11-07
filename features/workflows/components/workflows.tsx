@@ -5,6 +5,7 @@ import EntityHeader, {
   EntitiyContainer,
   EntityPagination,
   EntitySearch,
+  ErrorView,
   LoadingView,
 } from "@/components/entity-components";
 import { useUpgradeModal } from "@/hooks/use-upgrade-modal";
@@ -81,6 +82,9 @@ export const WorkflowsPagination = () => {
 
 export const WorkflowsLoading = () => {
   return <LoadingView entity="workflows"/>
+}
+export const WorkflowsError = () => {
+  return <ErrorView message="Error loading workflows"/>
 }
 
 export const WorkflowsContainer = ({
