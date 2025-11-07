@@ -7,14 +7,21 @@ import EntityHeader, {
 } from "@/components/entity-components";
 import { useUpgradeModal } from "@/hooks/use-upgrade-modal";
 import { useRouter } from "next/navigation";
+import { useWorkflowParams } from "../hooks/use-workflows-params";
+import { useEntitySearch } from "@/hooks/use-entity-search";
 
 type Props = {};
 
 export const WorkflowsSearch = () => {
+  const [params, setParams] = useWorkflowParams();
+  const { searchValue, onSearchChange } = useEntitySearch({
+    params,
+    setParams,
+  });
   return (
     <EntitySearch
-      value={""}
-      onChange={() => {}}
+      value={searchValue}
+      onChange={onSearchChange}
       placeholder="Search workflows"
     />
   );
