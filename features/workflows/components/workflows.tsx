@@ -5,6 +5,7 @@ import EntityHeader, {
   EntitiyContainer,
   EntityPagination,
   EntitySearch,
+  LoadingView,
 } from "@/components/entity-components";
 import { useUpgradeModal } from "@/hooks/use-upgrade-modal";
 import { useRouter } from "next/navigation";
@@ -77,6 +78,10 @@ export const WorkflowsPagination = () => {
     />
   );
 };
+
+export const WorkflowsLoading = () => {
+  return <LoadingView entity="workflows"/>
+}
 
 export const WorkflowsContainer = ({
   children,

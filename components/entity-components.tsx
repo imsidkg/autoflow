@@ -1,4 +1,4 @@
-import { PlusIcon } from "lucide-react";
+import { Loader2Icon, PlusIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import Link from "next/link";
 
@@ -119,7 +119,6 @@ export const EntitySearch = ({
   );
 };
 
-
 interface EntityPaginationProps {
   page: number;
   totalPages: number;
@@ -158,6 +157,28 @@ export const EntityPagination = ({
           Next
         </Button>
       </div>
+    </div>
+  );
+};
+
+interface StateViewProps {
+  message?: string;
+}
+
+interface LoadingViewProps extends StateViewProps {
+  entity?: string;
+}
+
+export const LoadingView = ({
+  entity = "items",
+  message,
+}: LoadingViewProps) => {
+  return (
+    <div className="flex justify-center items-center h-full flex-1 flex-col gap-y-4">
+      <Loader2Icon className="size-6 animate-spin text-primary" />
+      <p className="text-sm text-muted-foreground">
+        {message || `Loading ${entity}...`}
+      </p>
     </div>
   );
 };
