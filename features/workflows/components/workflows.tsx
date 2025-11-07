@@ -4,6 +4,7 @@ import {
   useCreateWorkflow,
   useRemoveWorkflow,
   useSuspenseWorkflow,
+  useSuspenseWorkflows,
 } from "../hooks/use-workflow";
 import EntityHeader, {
   EmptyView,
@@ -40,7 +41,7 @@ export const WorkflowsSearch = () => {
 };
 
 const WorkflowsList = (props: Props) => {
-  const workflows = useSuspenseWorkflow();
+  const workflows = useSuspenseWorkflows();
 
   return (
     <EntityList
@@ -84,7 +85,7 @@ export const WorkflowsHeader = ({ disabled }: { disabled?: Boolean }) => {
 };
 
 export const WorkflowsPagination = () => {
-  const workflows = useSuspenseWorkflow();
+  const workflows = useSuspenseWorkflows();
   const [params, setParams] = useWorkflowParams();
 
   return (

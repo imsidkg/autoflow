@@ -1,4 +1,5 @@
 import Editor from "@/features/editor/components/editor";
+import EditorHeader from "@/features/editor/components/editor-header";
 import WorkflowsList, {
   WorkflowsError,
   WorkflowsLoading,
@@ -43,7 +44,10 @@ const page = async ({ params }: Props) => {
               <p>Loading</p>
             }
           >
-            <Editor workflowId={workflowId} />
+            <EditorHeader workflowId={workflowId} />
+            <main className="flex-1">
+              <Editor workflowId={workflowId} />
+            </main>
           </Suspense>
         </ErrorBoundary>
       </HydrateClient>
