@@ -14,10 +14,13 @@ import {
   Background,
   BackgroundVariant,
   Controls,
+  Panel,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { ErrorView, LoadingView } from "@/components/entity-components";
 import { useSuspenseWorkflow } from "@/features/workflows/hooks/use-workflow";
+import { nodeComponents } from "@/config/node-components";
+import { AddNodeButton } from "@/components/add-node-button";
 
 const initialNodes: Node[] = [
   {
@@ -37,8 +40,8 @@ const initialEdges: Edge[] = [{ id: "n1-n2", source: "n1", target: "n2" }];
 export const Editor = ({ workflowId }: { workflowId: string }) => {
   const { data: workflow } = useSuspenseWorkflow(workflowId);
 
-  const [nodes, setNodes] = useState<Node[]>(initialNodes);
-  const [edges, setEdges] = useState<Edge[]>(initialEdges);
+  const [nodes, setNodes] = useState<Node[]>(workflow.nodes);
+  const [edges, setEdges] = useState<Edge[]>(workflow.edges);
 
   const onNodesChange = useCallback(
     (changes: NodeChange[]) =>
@@ -59,18 +62,22 @@ export const Editor = ({ workflowId }: { workflowId: string }) => {
   );
 
   return (
-      <div className="size-full">
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          fitView
-        >
-          <Background  variant={BackgroundVariant.Cross}/>
-          <Controls/>
-        </ReactFlow>
-      </div>
+    <div className="size-full">
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onConnect={onConnect}
+        fitView
+        nodeTypes={nodeComponents}
+      >
+        <Background variant={BackgroundVariant.Cross} />
+        <Controls />
+        <Panel position="top-right">
+          <AddNodeButton/> 
+        </Panel>
+      </ReactFlow>
+    </div>
   );
 };
