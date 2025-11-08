@@ -120,13 +120,14 @@ export const EditorBreadcrumbs = ({ workflowId }: { workflowId: string }) => {
 
         <BreadcrumbSeparator />
 
-        <BreadcrumbItem>
+        {/* <BreadcrumbItem>
           <BreadcrumbLink asChild>
             <Link prefetch href={`/workflows/${workflowId}`}>
               Editor
             </Link>
           </BreadcrumbLink>
-        </BreadcrumbItem>
+        </BreadcrumbItem> */}
+        <EditorNameInput workflowId={workflowId}/>
       </BreadcrumbList>
     </Breadcrumb>
   );

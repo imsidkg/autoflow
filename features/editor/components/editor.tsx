@@ -11,8 +11,11 @@ import {
   type NodeChange,
   type EdgeChange,
   type Connection,
+  Background,
+  BackgroundVariant,
+  Controls,
 } from "@xyflow/react";
-
+import "@xyflow/react/dist/style.css";
 import { ErrorView, LoadingView } from "@/components/entity-components";
 import { useSuspenseWorkflow } from "@/features/workflows/hooks/use-workflow";
 
@@ -56,14 +59,18 @@ export const Editor = ({ workflowId }: { workflowId: string }) => {
   );
 
   return (
-    <>
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-      />
-    </>
+      <div className="size-full">
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          fitView
+        >
+          <Background  variant={BackgroundVariant.Cross}/>
+          <Controls/>
+        </ReactFlow>
+      </div>
   );
 };

@@ -1,4 +1,4 @@
-import Editor from "@/features/editor/components/editor";
+import { Editor } from "@/features/editor/components/editor";
 import EditorHeader from "@/features/editor/components/editor-header";
 import WorkflowsList, {
   WorkflowsError,
@@ -24,7 +24,6 @@ const page = async ({ params }: Props) => {
   prefetchWorkflow(workflowId);
   return (
     <div>
-      workflowId : {workflowId}
       <HydrateClient>
         <ErrorBoundary
           fallback={
@@ -45,7 +44,7 @@ const page = async ({ params }: Props) => {
             }
           >
             <EditorHeader workflowId={workflowId} />
-            <main className="flex-1">
+            <main className="flex-1 h-screen">
               <Editor workflowId={workflowId} />
             </main>
           </Suspense>
