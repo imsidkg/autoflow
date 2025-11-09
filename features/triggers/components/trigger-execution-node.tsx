@@ -11,7 +11,7 @@ import { BaseHandle } from "@/components/base-handle";
 interface BaseNodeTriggerProps extends NodeProps {
   icon: LucideIcon | string;
   name: string;
-  description: string;
+  description?: string;
   children?: ReactNode;
   onSettings?: () => void;
   onDoubleClick?: () => void;
