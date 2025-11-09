@@ -8,7 +8,7 @@ import { BaseNode, BaseNodeContent } from "@/components/base-node";
 import { BaseHandle } from "@/components/base-handle";
 
 
-interface BaseExecutionNodeProps extends NodeProps {
+interface BaseNodeTriggerProps extends NodeProps {
   icon: LucideIcon | string;
   name: string;
   description: string;
@@ -17,7 +17,7 @@ interface BaseExecutionNodeProps extends NodeProps {
   onDoubleClick?: () => void;
 }
 
-export const BaseExecutionNode = memo(
+export const BaseTriggerNode = memo(
   ({
     id,
     icon: Icon,
@@ -26,7 +26,7 @@ export const BaseExecutionNode = memo(
     children,
     onSettings,
     onDoubleClick,
-  }: BaseExecutionNodeProps) => {
+  }: BaseNodeTriggerProps) => {
     const handleDelete = () => {};
 
     return (
@@ -36,7 +36,7 @@ export const BaseExecutionNode = memo(
         onDelete={handleDelete}
         onSettings={onSettings}
       >
-        <BaseNode onDoubleClick={onDoubleClick}>
+        <BaseNode onDoubleClick={onDoubleClick} className="roundedl-2xl relative group">
           <BaseNodeContent>
             {typeof Icon === "string" ? (
               <Image src={Icon} alt={name} width={16} height={16} />
@@ -47,7 +47,7 @@ export const BaseExecutionNode = memo(
 
           {children}
 
-          <BaseHandle id="target-1" type="target" position={Position.Left} />
+          {/* <BaseHandle id="target-1" type="target" position={Position.Left} /> */}
           <BaseHandle id="source-1" type="source" position={Position.Right} />
         </BaseNode>
       </WorkflowNode>
@@ -55,4 +55,4 @@ export const BaseExecutionNode = memo(
   }
 );
 
-BaseExecutionNode.displayName = "BaseExecutionNode";
+BaseTriggerNode.displayName = "BaseTriggerNode";
