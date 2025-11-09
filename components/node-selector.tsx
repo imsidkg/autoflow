@@ -17,7 +17,7 @@ import {
 import { Separator } from "./ui/separator";
 import { useReactFlow } from "@xyflow/react";
 import { toast } from "sonner";
-import {createId} from '@paralleldrive/cuid2'
+import { createId } from "@paralleldrive/cuid2";
 
 export type NodeTypeOption = {
   type: NodeType;
@@ -56,51 +56,51 @@ export const NodeSelector = ({
   children,
 }: NodeSelectorProps) => {
   const { setNodes, getNodes, screenToFlowPosition } = useReactFlow();
-  const handleNodeSelect = useCallback((selection: NodeTypeOption) => {
-    if (selection.type === NodeType.MANUAL_TRIGGER) {
-      const nodes = getNodes();
-      const hasManualTrigger = nodes.some(
-        (node) => node.type === NodeType.MANUAL_TRIGGER
-      );
+  const handleNodeSelect = useCallback(
+    (selection: NodeTypeOption) => {
+      if (selection.type === NodeType.MANUAL_TRIGGER) {
+        const nodes = getNodes();
+        const hasManualTrigger = nodes.some(
+          (node) => node.type === NodeType.MANUAL_TRIGGER
+        );
 
-      if (hasManualTrigger) {
-        toast.error("Only one manual trigger is allowed per workflow");
-        return;
+        if (hasManualTrigger) {
+          toast.error("Only one manual trigger is allowed per workflow");
+          return;
+        }
       }
-    }
 
-    setNodes((nodes) => {
-      const hasInitialTrigger = nodes.some(
-        (node) => node.type === NodeType.INITIAL
-      );
+      setNodes((nodes) => {
+        const hasInitialTrigger = nodes.some(
+          (node) => node.type === NodeType.INITIAL
+        );
 
-      const centerX = window.innerWidth / 2;
-      const centerY = window.innerHeight / 2;
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
 
-      const flowPosition = screenToFlowPosition({
-        x: centerX + (Math.random() - 0.5) * 200,
-        y: centerY + (Math.random() - 0.5) * 200,
+        const flowPosition = screenToFlowPosition({
+          x: centerX + (Math.random() - 0.5) * 200,
+          y: centerY + (Math.random() - 0.5) * 200,
+        });
+
+        const newNode = {
+          id: createId(),
+          data: {},
+          position: flowPosition,
+          type: selection.type,
+        };
+
+        if (hasInitialTrigger) {
+          return [...nodes, newNode];
+        }
+
+        return [newNode];
       });
 
-      const newNode = {
-        id: createId(),
-        data: {},
-        position: flowPosition,
-        type: selection.type,
-      };
-
-      if (hasInitialTrigger) {
-        return [...nodes, newNode];
-      }
-
-      return [newNode];
-    });
-
-    onOpenChange(false);
-  }, [ setNodes,
-  getNodes,
-  onOpenChange,
-  screenToFlowPosition,]);
+      onOpenChange(false);
+    },
+    [setNodes, getNodes, onOpenChange, screenToFlowPosition]
+  );
   return (
     <div>
       <Sheet open={open} onOpenChange={onOpenChange}>
@@ -123,7 +123,9 @@ export const NodeSelector = ({
                 <div
                   key={nodeType.type}
                   className="w-full justify-start h-auto py-5 px-4 rounded-none cursor-pointer border-l-2 border-transparent hover:border-l-primary"
-                  onClick={() => {}}
+                  onClick={() => {
+                    handleNodeSelect(nodeType);
+                  }}
                 >
                   <div className="flex items-center gap-6 w-full overflow-hidden">
                     {typeof Icon === "string" ? (
@@ -156,7 +158,9 @@ export const NodeSelector = ({
                 <div
                   key={nodeType.type}
                   className="w-full justify-start h-auto py-5 px-4 rounded-none cursor-pointer border-l-2 border-transparent hover:border-l-primary"
-                  onClick={() => {}}
+                  onClick={() => {
+                    handleNodeSelect(nodeType);
+                  }}
                 >
                   <div className="flex items-center gap-6 w-full overflow-hidden">
                     {typeof Icon === "string" ? (
