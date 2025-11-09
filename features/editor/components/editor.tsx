@@ -75,7 +75,7 @@ export const Editor = ({ workflowId }: { workflowId: string }) => {
         <Background variant={BackgroundVariant.Cross} />
         <Controls />
         <Panel position="top-right">
-          <AddNodeButton/> 
+          <AddNodeButton />
         </Panel>
       </ReactFlow>
     </div>
