@@ -27,20 +27,20 @@ const page = async ({ params }: Props) => {
       <HydrateClient>
         <ErrorBoundary
           fallback={
-            // <div>
-            //   <WorkflowsError />
-            // </div>
+            <div>
+              <WorkflowsError />
+            </div>
 
-            <p>Error</p>
+            // <p>Error</p>
           }
         >
           <Suspense
             fallback={
-              // <div>
-              //   <WorkflowsLoading />
-              // </div>
+              <div>
+                <WorkflowsLoading />
+              </div>
 
-              <p>Loading</p>
+             
             }
           >
             <EditorHeader workflowId={workflowId} />

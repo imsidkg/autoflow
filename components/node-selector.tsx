@@ -71,7 +71,7 @@ export const NodeSelector = ({
       }
 
       setNodes((nodes) => {
-        const hasInitialTrigger = nodes.some(
+        const initialNode = nodes.find(
           (node) => node.type === NodeType.INITIAL
         );
 
@@ -90,11 +90,14 @@ export const NodeSelector = ({
           type: selection.type,
         };
 
-        if (hasInitialTrigger) {
-          return [...nodes, newNode];
+        if (initialNode) {
+          const filteredNodes = nodes.filter(
+            (node) => node.type !== NodeType.INITIAL
+          );
+          return [...filteredNodes, newNode];
         }
 
-        return [newNode];
+        return [...nodes, newNode];
       });
 
       onOpenChange(false);
