@@ -41,7 +41,7 @@ const initialEdges: Edge[] = [{ id: "n1-n2", source: "n1", target: "n2" }];
 export const Editor = ({ workflowId }: { workflowId: string }) => {
   const { data: workflow } = useSuspenseWorkflow(workflowId);
 
-  const setEditor = useSetAtom(editorAtom)
+  const setEditor = useSetAtom(editorAtom);
 
   const [nodes, setNodes] = useState<Node[]>(workflow.nodes);
   const [edges, setEdges] = useState<Edge[]>(workflow.edges);
@@ -75,6 +75,11 @@ export const Editor = ({ workflowId }: { workflowId: string }) => {
         fitView
         nodeTypes={nodeComponents}
         onInit={setEditor}
+        snapGrid={[10, 10]}
+        snapToGrid
+        panOnScroll
+        panOnDrag={false}
+        selectionOnDrag
       >
         <Background variant={BackgroundVariant.Cross} />
         <Controls />

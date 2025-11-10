@@ -2,13 +2,12 @@ import { memo } from "react";
 import Image from "next/image";
 import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
-import { NodeProps, Position } from "@xyflow/react";
+import { NodeProps, Position, useReactFlow } from "@xyflow/react";
 import { WorkflowNode } from "@/components/workflow-node";
 import { BaseNode, BaseNodeContent } from "@/components/base-node";
 import { BaseHandle } from "@/components/base-handle";
 
-
-interface BaseNodeTriggerProps extends NodeProps {
+interface BaseTriggerProps extends NodeProps {
   icon: LucideIcon | string;
   name: string;
   description?: string;
@@ -26,8 +25,21 @@ export const BaseTriggerNode = memo(
     children,
     onSettings,
     onDoubleClick,
-  }: BaseNodeTriggerProps) => {
-    const handleDelete = () => {};
+  }: BaseTriggerProps) => {
+    const { setNodes, setEdges } = useReactFlow();
+    const handleDelete = () => {
+      setNodes((currentNodes) => {
+        const updatedNodes = currentNodes.filter((node) => node.id !== id);
+        return updatedNodes;
+      });
+
+      setEdges((currentEdges) => {
+        const updatedEdges = currentEdges.filter(
+          (edge) => edge.source !== id && edge.target !== id
+        );
+        return updatedEdges;
+      });
+    };
 
     return (
       <WorkflowNode
@@ -36,7 +48,10 @@ export const BaseTriggerNode = memo(
         onDelete={handleDelete}
         onSettings={onSettings}
       >
-        <BaseNode onDoubleClick={onDoubleClick} className="roundedl-2xl relative group">
+        <BaseNode
+          onDoubleClick={onDoubleClick}
+          className="roundedl-2xl relative group"
+        >
           <BaseNodeContent>
             {typeof Icon === "string" ? (
               <Image src={Icon} alt={name} width={16} height={16} />
