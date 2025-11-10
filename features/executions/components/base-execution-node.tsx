@@ -6,6 +6,10 @@ import { NodeProps, Position, useReactFlow } from "@xyflow/react";
 import { WorkflowNode } from "@/components/workflow-node";
 import { BaseNode, BaseNodeContent } from "@/components/base-node";
 import { BaseHandle } from "@/components/base-handle";
+import {
+  type NodeStatus,
+  NodeStatusIndicator,
+} from "@/components/node-status-indicator";
 
 interface BaseExecutionNodeProps extends NodeProps {
   icon: LucideIcon | string;
@@ -14,6 +18,7 @@ interface BaseExecutionNodeProps extends NodeProps {
   children?: ReactNode;
   onSettings?: () => void;
   onDoubleClick?: () => void;
+  status?: NodeStatus;
 }
 
 export const BaseExecutionNode = memo(
@@ -25,6 +30,7 @@ export const BaseExecutionNode = memo(
     children,
     onSettings,
     onDoubleClick,
+    status='initial'
   }: BaseExecutionNodeProps) => {
     const { setNodes, setEdges } = useReactFlow();
     const handleDelete = () => {
@@ -48,20 +54,22 @@ export const BaseExecutionNode = memo(
         onDelete={handleDelete}
         onSettings={onSettings}
       >
-        <BaseNode onDoubleClick={onDoubleClick}>
-          <BaseNodeContent>
-            {typeof Icon === "string" ? (
-              <Image src={Icon} alt={name} width={16} height={16} />
-            ) : (
-              <Icon className="size-4 text-muted-foreground" />
-            )}
-          </BaseNodeContent>
+        <NodeStatusIndicator status={status} variant="border">
+          <BaseNode onDoubleClick={onDoubleClick}>
+            <BaseNodeContent>
+              {typeof Icon === "string" ? (
+                <Image src={Icon} alt={name} width={16} height={16} />
+              ) : (
+                <Icon className="size-4 text-muted-foreground" />
+              )}
+            </BaseNodeContent>
 
-          {children}
+            {children}
 
-          <BaseHandle id="target-1" type="target" position={Position.Left} />
-          <BaseHandle id="source-1" type="source" position={Position.Right} />
-        </BaseNode>
+            <BaseHandle id="target-1" type="target" position={Position.Left} />
+            <BaseHandle id="source-1" type="source" position={Position.Right} />
+          </BaseNode>
+        </NodeStatusIndicator>
       </WorkflowNode>
     );
   }
