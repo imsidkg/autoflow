@@ -62,7 +62,6 @@ export const workflowsRouter = createTRPCRouter({
     .input(
       z.object({
         id: z.string(),
-        name: z.string().min(1),
 
         nodes: z.array(
           z.object({
@@ -84,17 +83,17 @@ export const workflowsRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { id, name, nodes, edges } = input;
+      const { id, nodes, edges } = input;
 
-    const workflow =  await prisma.workflow.findUniqueOrThrow({
+      const workflow = await prisma.workflow.findUniqueOrThrow({
         where: { id, userId: ctx.auth.user.id },
       });
 
       return await prisma.$transaction(async (tx) => {
-        await tx.workflow.update({
-          where: { id },
-          data: { name },
-        });
+        // await tx.workflow.update({
+        //   where: { workflowId: id },
+        //   data: { name },
+        // });
 
         await tx.connection.deleteMany({ where: { workflowId: id } });
         await tx.node.deleteMany({ where: { workflowId: id } });
@@ -120,7 +119,7 @@ export const workflowsRouter = createTRPCRouter({
           })),
         });
 
-        return { workflow };
+        return workflow;
       });
     }),
 

@@ -18,8 +18,11 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
   useSuspenseWorkflow,
+  useUpdateWorkflow,
   useUpdateWorkflowName,
 } from "@/features/workflows/hooks/use-workflow";
+import { editorAtom } from "../store/atoms";
+import { useAtomValue } from "jotai";
 
 type Props = {};
 
@@ -74,7 +77,7 @@ export const EditorNameInput = ({ workflowId }: { workflowId: string }) => {
   if (isEditing) {
     return (
       <Input
-        disabled = {updateWorkflow.isPending}
+        disabled={updateWorkflow.isPending}
         ref={inputRef}
         value={name}
         onChange={(e) => setName(e.target.value)}
@@ -96,9 +99,26 @@ export const EditorNameInput = ({ workflowId }: { workflowId: string }) => {
 };
 
 export const EditorSaveButton = ({ workflowId }: { workflowId: string }) => {
+  const editor = useAtomValue(editorAtom);
+  const saveWorkflow = useUpdateWorkflow();
+
+  const handleSave = () => {
+    if (!editor) {
+      return;
+    }
+
+    const nodes = editor.getNodes();
+    const edges = editor.getEdges();
+
+    saveWorkflow.mutate({
+      id: workflowId,
+      nodes,
+      edges,
+    });
+  };
   return (
     <div className="ml-auto">
-      <Button size="sm" onClick={() => {}} disabled={false}>
+      <Button size="sm" onClick={handleSave} disabled={saveWorkflow.isPending}>
         <SaveIcon className="size-4" />
         Save
       </Button>
@@ -127,7 +147,7 @@ export const EditorBreadcrumbs = ({ workflowId }: { workflowId: string }) => {
             </Link>
           </BreadcrumbLink>
         </BreadcrumbItem> */}
-        <EditorNameInput workflowId={workflowId}/>
+        <EditorNameInput workflowId={workflowId} />
       </BreadcrumbList>
     </Breadcrumb>
   );
