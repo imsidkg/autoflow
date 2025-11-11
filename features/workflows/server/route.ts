@@ -5,8 +5,24 @@ import { queryKeys } from "inngest";
 import { PAGINATION } from "@/config/consants";
 import { NodeType } from "@/lib/generated/prisma";
 import type { Edge, Node } from "@xyflow/react";
+import { inngest } from "@/inngest/client";
 
 export const workflowsRouter = createTRPCRouter({
+  execute: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      const workflow = await prisma.workflow.findUniqueOrThrow({
+        where: {
+          id: input.id,
+          userId: ctx.auth.user.id,
+        },
+      });
+      await inngest.send({
+        name: "workflows/execute.workflow",
+        data: { workflowId: input.id },
+      });
+      return workflow;
+    }),
   // for this change protectedProcedure to protected after integrating better auth
   create: protectedProcedure.mutation(({ ctx }) => {
     return prisma.workflow.create({

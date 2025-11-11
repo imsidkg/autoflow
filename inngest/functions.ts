@@ -1,48 +1,30 @@
-import { createGoogleGenerativeAI } from "@ai-sdk/google";
-import { createOpenAI } from "@ai-sdk/openai";
-import { createAnthropic } from "@ai-sdk/anthropic";
+import { fi } from "date-fns/locale";
 import { inngest } from "./client";
-import { generateText } from "ai";
+import { NonRetriableError } from "inngest";
+import prisma from "@/lib/db";
 
-const google = createGoogleGenerativeAI();
-const openAI = createOpenAI();
-const anthropic = createAnthropic();
 export const execute = inngest.createFunction(
-  { id: "execute-ai" },
-  { event: "execute/ai" },
+  { id: "execute-workflow" },
+  { event: "workflows/execute.workflow" },
   async ({ event, step }) => {
-    const { steps: geminiSteps } = await step.ai.wrap(
-      "gemini-generate-text",
-      generateText,
-      {
-        model: google("gemini-2.5-flash"),
-        system: "You are a helpful assistant",
-        prompt: "What is 2+2?",
-        experimental_telemetry: {
-          isEnabled: true,
-          recordInputs: true,
-          recordOutputs: true,
+    const workflowId = event.data.workflowId;
+    if (!workflowId) {
+      throw new NonRetriableError("Workflow ID is missing");
+    }
+
+    const nodes = await step.run("prepare-workflow", async () => {
+      const workflow = await prisma.workflow.findUniqueOrThrow({
+        where: {
+          id: workflowId,
         },
-      }
-    );
-    const { steps: openAISteps } = await step.ai.wrap(
-      "openAI-generate-text",
-      generateText,
-      {
-        model: openAI("gpt-4"),
-        system: "You are a helpful assistant",
-        prompt: "What is 2+2?",
-      }
-    );
-    const { steps: anthropicSteps } = await step.ai.wrap(
-      "anthropic-generate-text",
-      generateText,
-      {
-        model: anthropic("claude-sonnet-4-0"),
-        system: "You are a helpful assistant",
-        prompt: "What is 2+2?",
-      }
-    );
-    return { geminiSteps, openAISteps, anthropicSteps };
+        include: {
+          nodes: true,
+          connections: true,
+        },
+      });
+      return workflow.nodes
+    });
+    console.log(nodes)
+    return {nodes}
   }
 );

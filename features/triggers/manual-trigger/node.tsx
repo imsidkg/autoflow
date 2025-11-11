@@ -18,9 +18,7 @@ export const ManualTriggerNode = memo((props: NodeProps) => {
         name="When clicking 'Execute workflow'"
         onSettings={handleOpenSettings}
         status={nodeStatus}
-        onDoubleClick={() => {
-          // Optional: same or different behavior
-        }}
+        onDoubleClick={handleOpenSettings}
       />
     </>
   );
