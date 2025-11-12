@@ -5,6 +5,7 @@ import { BaseExecutionNode } from "../base-execution-node";
 import { HttpRequestFormValues, HTTPRequestDialog } from "./dialog";
 
 export type HttpRequestNodeData = {
+  variableName?:string
   endpoint?: string;
   method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   body?: string;
