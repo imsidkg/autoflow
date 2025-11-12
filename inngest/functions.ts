@@ -9,7 +9,7 @@ import { getExecutor } from "@/features/executions/lib/executor-registry";
 export const execute = inngest.createFunction(
   { id: "execute-workflow" },
   { event: "workflows/execute.workflow" },
-  async ({ event, step }) => {
+  async ({ event, step , publish }) => {
     const workflowId = event.data.workflowId;
     if (!workflowId) {
       throw new NonRetriableError("Workflow ID is missing");
@@ -36,6 +36,7 @@ export const execute = inngest.createFunction(
         nodeId: node.id,
         context,
         step,
+        publish
       });
     }
     return { workflowId , result: context };

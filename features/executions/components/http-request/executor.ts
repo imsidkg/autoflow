@@ -2,6 +2,7 @@ import { NodeExecutor } from "@/features/executions/type";
 import { NonRetriableError } from "inngest";
 import ky, { type Options as KyOptions } from "ky";
 import Handlebars from "handlebars";
+import { httpRequestChannel } from "@/inngest/channels/http-request";
 
 type HttpRequestData = {
   variableName: string;
@@ -20,15 +21,41 @@ export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async ({
   nodeId,
   context,
   step,
+  publish
 }) => {
+
+  await publish(
+    httpRequestChannel().status({
+      nodeId,
+      status: 'loading'
+    })
+  )
   // TODO: Publish "loading" state for HTTP request
   if (!data.endpoint) {
+    await publish(
+    httpRequestChannel().status({
+      nodeId,
+      status: 'error'
+    })
+  )
     throw new NonRetriableError("HTTP Request node: no endpoint configured");
   }
   if (!data.method) {
+    await publish(
+    httpRequestChannel().status({
+      nodeId,
+      status: 'error'
+    })
+  )
     throw new NonRetriableError("HTTP Request node: no method configured");
   }
   if (!data.variableName) {
+    await publish(
+    httpRequestChannel().status({
+      nodeId,
+      status: 'error'
+    })
+  )
     throw new NonRetriableError(
       "HTTP Request node: no variable name configured"
     );
@@ -69,6 +96,12 @@ export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async ({
   });
 
   // TODO: Publish "success" state for HTTP request
+  await publish(
+    httpRequestChannel().status({
+      nodeId,
+      status: 'success'
+    })
+  )
 
   return result;
 };
