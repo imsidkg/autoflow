@@ -3,10 +3,17 @@ import type { NodeProps } from "@xyflow/react";
 import { MousePointerClickIcon } from "lucide-react"; // or MousePointerIcon if you're using that
 import { BaseTriggerNode } from "../components/base-trigger-node";
 import { ManualTriggerDialog } from "./dialog";
+import { useNodeStatus } from "@/features/executions/hooks/use-node-status";
+import { fetchManualTriggerRealtimeToken } from "./action";
 
 export const ManualTriggerNode = memo((props: NodeProps) => {
   const [dialogOpen, setDialogOpen] = useState(false);
-  const nodeStatus = "loading";
+  const nodeStatus = useNodeStatus({
+    nodeId: props.id,
+    channel: "manual-trigger-execution",
+    topic: "status",
+    refreshToken: fetchManualTriggerRealtimeToken,
+  });
 
   const handleOpenSettings = () => setDialogOpen(true);
   return (
