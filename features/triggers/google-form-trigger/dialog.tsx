@@ -23,7 +23,7 @@ interface Props {
   onOpenChange: (open: boolean) => void;
 }
 
-export const GoogleFormTrigger = ({ open, onOpenChange }: Props) => {
+export const GoogleFormTriggerDialog = ({ open, onOpenChange }: Props) => {
   const params = useParams();
   const workflowId = params.workflowId as string;
 

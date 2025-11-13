@@ -1,17 +1,24 @@
 import { memo, useState } from "react";
 import type { NodeProps } from "@xyflow/react";
-import { MousePointerClickIcon } from "lucide-react"; 
 import { BaseTriggerNode } from "../components/base-trigger-node";
-import { ManualTriggerDialog } from "./dialog";
+import { GoogleFormTriggerDialog } from "./dialog";
+import { useNodeStatus } from "@/features/executions/hooks/use-node-status";
+import { fetchGoogleFormTriggerRealtimeToken } from "./action";
 
 export const GoogleFormTrigger = memo((props: NodeProps) => {
   const [dialogOpen, setDialogOpen] = useState(false);
-  const nodeStatus = "initial";
+  const nodeStatus = useNodeStatus({
+      nodeId: props.id,
+      channel: "google-form-trigger-execution",
+      topic: "status",
+      refreshToken: fetchGoogleFormTriggerRealtimeToken,
+    });
+  
 
   const handleOpenSettings = () => setDialogOpen(true);
   return (
     <>
-      <ManualTriggerDialog open={dialogOpen} onOpenChange={setDialogOpen} />
+      <GoogleFormTriggerDialog open={dialogOpen} onOpenChange={setDialogOpen} />
       <BaseTriggerNode
         {...props}
         icon='/logos/googleform.svg'
