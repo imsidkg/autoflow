@@ -6,6 +6,7 @@ import { PAGINATION } from "@/config/consants";
 import { NodeType } from "@/lib/generated/prisma";
 import type { Edge, Node } from "@xyflow/react";
 import { inngest } from "@/inngest/client";
+import { sendWorkflowExecution } from "@/inngest/utils";
 
 export const workflowsRouter = createTRPCRouter({
   execute: protectedProcedure
@@ -17,10 +18,8 @@ export const workflowsRouter = createTRPCRouter({
           userId: ctx.auth.user.id,
         },
       });
-      await inngest.send({
-        name: "workflows/execute.workflow",
-        data: { workflowId: input.id },
-      });
+
+      await sendWorkflowExecution({ workflowId: input.id });
       return workflow;
     }),
   // for this change protectedProcedure to protected after integrating better auth
