@@ -36,6 +36,14 @@ import { useForm } from "react-hook-form";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 
+const AVAILABLE_MODELS = [
+  "gemini-1.5-flash",
+  "gemini-1.5-flash-8b",
+  "gemini-1.5-pro",
+  "gemini-1.0-pro",
+  "gemini-pro",
+] as const;
+
 const formSchema = z.object({
   variableName: z
     .string()
@@ -45,22 +53,22 @@ const formSchema = z.object({
         "Variable name must start with a letter or underscore and contain only letters, numbers, and underscores",
     }),
 
-  endpoint: z.string().min(1,{ message: "Please enter a valid URL" }),
-  method: z.enum(["GET", "POST", "PUT", "PATCH", "DELETE"]),
-  body: z.string().optional(),
+  model: z.enum(AVAILABLE_MODELS),
+  systemPrompt: z.string().optional(),
+  userPrompt: z.string().min(1, "User prompt is required"),
   // .refine() TODO
 });
 
-export type HttpRequestFormValues = z.infer<typeof formSchema>;
+export type GeminiFormValues = z.infer<typeof formSchema>;
 
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (values: z.infer<typeof formSchema>) => void;
-  defaultValues?: Partial<HttpRequestFormValues>;
+  defaultValues?: Partial<GeminiFormValues>;
 }
 
-export const HTTPRequestDialog = ({
+export const GeminiDialog = ({
   open,
   onOpenChange,
   onSubmit,
@@ -70,14 +78,11 @@ export const HTTPRequestDialog = ({
     resolver: zodResolver(formSchema),
     defaultValues: {
       variableName: defaultValues.variableName || "",
-      endpoint: defaultValues.endpoint || "",
-      method: defaultValues.method || "GET",
-      body: defaultValues.body || "",
+      model: defaultValues.model || AVAILABLE_MODELS[0],
+      systemPrompt: defaultValues.systemPrompt || "",
+      userPrompt: defaultValues.userPrompt || "",
     },
   });
-
-  const watchMethod = form.watch("method");
-  const showBodyField = ["POST", "PUT", "PATCH"].includes(watchMethod);
 
   const watchVariableName = form.watch("variableName");
 
@@ -90,9 +95,9 @@ export const HTTPRequestDialog = ({
     if (open) {
       form.reset({
         variableName: defaultValues.variableName || "",
-        endpoint: defaultValues.endpoint || "",
-        method: defaultValues.method || "GET",
-        body: defaultValues.body || "",
+        model: defaultValues.model || AVAILABLE_MODELS[0],
+        systemPrompt: defaultValues.systemPrompt || "",
+        userPrompt: defaultValues.userPrompt || "",
       });
     }
   }, [open, defaultValues, form]);
@@ -100,9 +105,9 @@ export const HTTPRequestDialog = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>HTTP Trigger</DialogTitle>
+          <DialogTitle>Gemini</DialogTitle>
           <DialogDescription>
-            Configure settings for HTTP trigger node.
+            Configure the AI model and prompts for this node.
           </DialogDescription>
         </DialogHeader>
 
@@ -122,7 +127,7 @@ export const HTTPRequestDialog = ({
                   </FormControl>
                   <FormDescription>
                     Use this name to reference the result in other nodes:{" "}
-                    {`{{${watchVariableName}.httpResponse.data}}`}
+                    {`{{${watchVariableName}.text}}`}
                   </FormDescription>
                 </FormItem>
               )}
@@ -130,78 +135,31 @@ export const HTTPRequestDialog = ({
 
             <FormField
               control={form.control}
-              name="method"
+              name="systemPrompt"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Method</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select a method" />
-                      </SelectTrigger>
-                    </FormControl>
-
-                    <SelectContent>
-                      <SelectItem value="GET">GET</SelectItem>
-                      <SelectItem value="POST">POST</SelectItem>
-                      <SelectItem value="PUT">PUT</SelectItem>
-                      <SelectItem value="PATCH">PATCH</SelectItem>
-                      <SelectItem value="DELETE">DELETE</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormDescription>
-                    The HTTP method to use for this request
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="endpoint"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Endpoint URL</FormLabel>
+                  <FormLabel>System Prompt (Optional)</FormLabel>
                   <FormControl>
-                    <Input placeholder="" {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    The HTTP method to use for this request
-                  </FormDescription>
-                </FormItem>
-              )}
-            />
-            {showBodyField && (
-              <FormField
-                control={form.control}
-                name="body"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Request Body</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder={`{
+                    <Textarea
+                      placeholder={`{
                              "userId": "{{httpResponse.data.id}}",
                              "name": "{{httpResponse.data.name}}",
                              "items": "{{httpResponse.data.items}}"
                            }`}
-                        className="min-h-[120px] font-mono text-sm"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      JSON with template variables. Use {"{{variables}}"} for
-                      simple values or {"{{json variable}}"} to stringify
-                      objects
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
+                      className="min-h-[80px] font-mono text-sm"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Sets the behavior of the assistant. Use {"{{variables}}"}{" "}
+                    for simple values or {"{{json variable}}"} to stringify
+                    objects
+                  </FormDescription>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <DialogFooter className="mt-4">
               <Button type="submit">Save</Button>
             </DialogFooter>

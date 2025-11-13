@@ -1,11 +1,9 @@
 import { memo, useState } from "react";
 import { useReactFlow, type Node, type NodeProps } from "@xyflow/react";
-import { GlobeIcon } from "lucide-react";
 import { BaseExecutionNode } from "../base-execution-node";
-import { HttpRequestFormValues, HTTPRequestDialog } from "./dialog";
 import { useNodeStatus } from "../../hooks/use-node-status";
-import { httpRequestChannel } from "@/inngest/channels/http-request";
 import { fetchHttpRequestRealtimeToken } from "./action";
+import { GeminiDialog, GeminiFormValues } from "./dialog";
 
 export type GeminiNodeData = {
   variableName?: string;
@@ -32,7 +30,7 @@ export const GeminiNode = memo((props: NodeProps<GeminiNodeType>) => {
       ? `${nodeData.method ?? "GET"}: ${nodeData.endpoint}`
       : "Not configured";
 
-  const handleSubmit = (values: HttpRequestFormValues) => {
+  const handleSubmit = (values: GeminiFormValues) => {
     setNodes((nodes) =>
       nodes.map((node) => {
         if (node.id === props.id) {
@@ -52,7 +50,7 @@ export const GeminiNode = memo((props: NodeProps<GeminiNodeType>) => {
 
   return (
     <div>
-      <HTTPRequestDialog
+      <GeminiDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         onSubmit={handleSubmit}
