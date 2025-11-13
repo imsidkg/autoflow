@@ -1,4 +1,3 @@
-import { fi } from "date-fns/locale";
 import { inngest } from "./client";
 import { NonRetriableError } from "inngest";
 import prisma from "@/lib/db";
