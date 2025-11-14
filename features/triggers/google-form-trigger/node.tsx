@@ -21,7 +21,7 @@ export const GoogleFormTrigger = memo((props: NodeProps) => {
       <GoogleFormTriggerDialog open={dialogOpen} onOpenChange={setDialogOpen} />
       <BaseTriggerNode
         {...props}
-        icon='/logos/googleform.svg'
+        icon='/logo/googleform.svg'
         name="Google Form"
         description="When the form is submitted"
         onSettings={handleOpenSettings}

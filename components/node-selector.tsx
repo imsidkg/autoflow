@@ -36,10 +36,10 @@ const triggerNodes: NodeTypeOption[] = [
   },
   {
     type: NodeType.GOOGLE_FORM_TRIGGER,
-    label: "Google For,",
+    label: "Google Form",
     description:
       "Runs the workflow when a Google Form is submitted",
-    icon: '/logos/googleform.svg',
+    icon: '/logo/googleform.svg',
   },
 ];
 const executionNodes: NodeTypeOption[] = [
@@ -53,7 +53,7 @@ const executionNodes: NodeTypeOption[] = [
     type: NodeType.GEMINI,
     label: "Gemini",
     description: "Use Gemini to generate text",
-    icon: "/logos/gemini.svg",
+    icon: "/logo/gemini.svg",
   },
 ];
 

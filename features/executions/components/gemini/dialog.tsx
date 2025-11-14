@@ -42,6 +42,7 @@ export const AVAILABLE_MODELS = [
   "gemini-1.5-pro",
   "gemini-1.0-pro",
   "gemini-pro",
+  "gemini-2.0-flash"
 ] as const;
 
 const formSchema = z.object({
@@ -187,7 +188,7 @@ export const GeminiDialog = ({
             />
             <FormField
               control={form.control}
-              name="systemPrompt"
+              name="userPrompt"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>User Prompt</FormLabel>

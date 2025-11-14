@@ -6,7 +6,7 @@ import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { geminiRequestChannel } from "@/inngest/channels/gemini";
 
 type GeminiData = {
-  variableName: string;
+  variableName?: string;
   model?: string;
   systemPrompt?: string;
   userPrompt?: string;
