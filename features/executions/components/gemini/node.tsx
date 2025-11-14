@@ -2,13 +2,13 @@ import { memo, useState } from "react";
 import { useReactFlow, type Node, type NodeProps } from "@xyflow/react";
 import { BaseExecutionNode } from "../base-execution-node";
 import { useNodeStatus } from "../../hooks/use-node-status";
-import { fetchHttpRequestRealtimeToken } from "./action";
 import { AVAILABLE_MODELS, GeminiDialog, GeminiFormValues } from "./dialog";
+import { fetchGeminiRealtimeToken } from "./action";
 
-export type AvailableModel = typeof AVAILABLE_MODELS[number];
+export type AvailableModel = (typeof AVAILABLE_MODELS)[number];
 
 export type GeminiNodeData = {
-  model?:  AvailableModel;
+  model?: AvailableModel;
   systemPrompt?: string;
   userPrompt?: string;
 };
@@ -22,14 +22,16 @@ export const GeminiNode = memo((props: NodeProps<GeminiNodeType>) => {
     nodeId: props.id,
     channel: "gemini-execution",
     topic: "status",
-    refreshToken: fetchHttpRequestRealtimeToken,
+    refreshToken: fetchGeminiRealtimeToken,
   });
   const nodeData = props.data ?? {};
   const handleOpenSettings = () => setDialogOpen(true);
-  const description =
-    nodeData.userPrompt
-      ? `${nodeData.model ?? AVAILABLE_MODELS[0]}: ${nodeData.userPrompt.slice(0,50)}...`
-      : "Not configured";
+  const description = nodeData.userPrompt
+    ? `${nodeData.model ?? AVAILABLE_MODELS[0]}: ${nodeData.userPrompt.slice(
+        0,
+        50
+      )}...`
+    : "Not configured";
 
   const handleSubmit = (values: GeminiFormValues) => {
     setNodes((nodes) =>
