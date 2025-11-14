@@ -36,7 +36,7 @@ import { useForm } from "react-hook-form";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 
-const AVAILABLE_MODELS = [
+export const AVAILABLE_MODELS = [
   "gemini-1.5-flash",
   "gemini-1.5-flash-8b",
   "gemini-1.5-pro",
@@ -132,6 +132,35 @@ export const GeminiDialog = ({
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="model"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Model </FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select a model" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {AVAILABLE_MODELS.map((model) => (
+                        <SelectItem key={model} value={model}>
+                          {model}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormDescription>
+                    The Google Gemini model to use for completion
+                  </FormDescription>
+                </FormItem>
+              )}
+            />
 
             <FormField
               control={form.control}
@@ -141,12 +170,31 @@ export const GeminiDialog = ({
                   <FormLabel>System Prompt (Optional)</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder={`{
-                             "userId": "{{httpResponse.data.id}}",
-                             "name": "{{httpResponse.data.name}}",
-                             "items": "{{httpResponse.data.items}}"
-                           }`}
+                      placeholder="You are a helpful assistant"
                       className="min-h-[80px] font-mono text-sm"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Sets the behavior of the assistant. Use {"{{variables}}"}{" "}
+                    for simple values or {"{{json variable}}"} to stringify
+                    objects
+                  </FormDescription>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="systemPrompt"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>User Prompt</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Summarize this text: {{json.httpResponse.data}}"
+                      className="min-h-[120px] font-mono text-sm"
                       {...field}
                     />
                   </FormControl>

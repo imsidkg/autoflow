@@ -3,13 +3,14 @@ import { useReactFlow, type Node, type NodeProps } from "@xyflow/react";
 import { BaseExecutionNode } from "../base-execution-node";
 import { useNodeStatus } from "../../hooks/use-node-status";
 import { fetchHttpRequestRealtimeToken } from "./action";
-import { GeminiDialog, GeminiFormValues } from "./dialog";
+import { AVAILABLE_MODELS, GeminiDialog, GeminiFormValues } from "./dialog";
+
+export type AvailableModel = typeof AVAILABLE_MODELS[number];
 
 export type GeminiNodeData = {
-  variableName?: string;
-  endpoint?: string;
-  method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
-  body?: string;
+  model?:  AvailableModel;
+  systemPrompt?: string;
+  userPrompt?: string;
 };
 
 export type GeminiNodeType = Node<GeminiNodeData>;
@@ -26,8 +27,8 @@ export const GeminiNode = memo((props: NodeProps<GeminiNodeType>) => {
   const nodeData = props.data ?? {};
   const handleOpenSettings = () => setDialogOpen(true);
   const description =
-    nodeData.endpoint && nodeData.endpoint.length > 0
-      ? `${nodeData.method ?? "GET"}: ${nodeData.endpoint}`
+    nodeData.userPrompt
+      ? `${nodeData.model ?? AVAILABLE_MODELS[0]}: ${nodeData.userPrompt.slice(0,50)}...`
       : "Not configured";
 
   const handleSubmit = (values: GeminiFormValues) => {
