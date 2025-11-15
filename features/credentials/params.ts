@@ -1,7 +1,7 @@
 import { PAGINATION } from "@/config/consants";
 import { parseAsInteger, parseAsString } from "nuqs/server";
 
-export const credentialParams = {
+export const credentialsParams = {
   page: parseAsInteger
     .withDefault(PAGINATION.DEFAULT_PAGE)
     .withOptions({ clearOnDefault: true }),
