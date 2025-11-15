@@ -30,7 +30,7 @@ export const BaseExecutionNode = memo(
     children,
     onSettings,
     onDoubleClick,
-    status='initial'
+    status = "initial",
   }: BaseExecutionNodeProps) => {
     const { setNodes, setEdges } = useReactFlow();
     const handleDelete = () => {
@@ -55,7 +55,7 @@ export const BaseExecutionNode = memo(
         onSettings={onSettings}
       >
         <NodeStatusIndicator status={status} variant="border">
-          <BaseNode onDoubleClick={onDoubleClick}>
+          <BaseNode status={status} onDoubleClick={onDoubleClick}>
             <BaseNodeContent>
               {typeof Icon === "string" ? (
                 <Image src={Icon} alt={name} width={16} height={16} />
