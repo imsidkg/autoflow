@@ -97,7 +97,7 @@ export const useUpdateCredential = () => {
   );
 };
 
-export const useCredentialType = (type: CredentialType) => {
+export const useCredentialsByType = (type: CredentialType) => {
   const trpc = useTRPC();
   return useQuery(trpc.credential.getByType.queryOptions({ type }));
 };
