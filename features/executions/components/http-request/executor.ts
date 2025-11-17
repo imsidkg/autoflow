@@ -5,17 +5,22 @@ import Handlebars from "handlebars";
 import { httpRequestChannel } from "@/inngest/channels/http-request";
 
 type HttpRequestData = {
-  variableName: string;
-  endpoint: string;
-  method: "GET" | "POST" | "PUT" | "DELETE";
+  variableName?: string;
+  endpoint?: string;
+  method?: "GET" | "POST" | "PUT" | "DELETE";
   body?: string;
 };
 
 Handlebars.registerHelper("json", (context) => {
-  const jsonString = JSON.stringify(context, null, 2);
-  const safeString = new Handlebars.SafeString(jsonString);
-  return safeString;
+  try {
+    const jsonString = JSON.stringify(context, null, 2);
+    return new Handlebars.SafeString(jsonString);
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : String(error);
+    throw new Error(`Failed to serialize context to JSON: ${msg}`);
+  }
 });
+
 export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async ({
   data,
   nodeId,
@@ -23,56 +28,25 @@ export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async ({
   step,
   publish,
 }) => {
-  await publish(
-    httpRequestChannel().status({
-      nodeId,
-      status: "loading",
-    })
-  );
-  // TODO: Publish "loading" state for HTTP request
-  if (!data.endpoint) {
-    await publish(
-      httpRequestChannel().status({
-        nodeId,
-        status: "error",
-      })
-    );
-    throw new NonRetriableError("HTTP Request node: no endpoint configured");
-  }
-  if (!data.method) {
-    await publish(
-      httpRequestChannel().status({
-        nodeId,
-        status: "error",
-      })
-    );
-    throw new NonRetriableError("HTTP Request node: no method configured");
-  }
-  if (!data.variableName) {
-    await publish(
-      httpRequestChannel().status({
-        nodeId,
-        status: "error",
-      })
-    );
-    throw new NonRetriableError(
-      "HTTP Request node: no variable name configured"
-    );
-  }
+  await publish(httpRequestChannel().status({ nodeId, status: "loading" }));
 
   try {
     const result = await step.run("http-request", async () => {
+      if (!data.endpoint || !data.method || !data.variableName) {
+        await publish(httpRequestChannel().status({ nodeId, status: "error" }));
+        throw new NonRetriableError(
+          " HTTP Request Node: Missing endpoint or method or variable name."
+        );
+      }
       const endpoint = Handlebars.compile(data.endpoint)(context);
-      const method = data.method || "GET";
+      const method = data.method;
       const options: KyOptions = { method };
 
       if (["POST", "PUT", "PATCH"].includes(method)) {
-        const resolved = Handlebars.compile(data.body)(context);
-        JSON.parse(resolved);
-        options.body = data.body;
-        options.headers = {
-          "Content-Type": "application/json",
-        };
+        const compiledBody = Handlebars.compile(data.body ?? "{}")(context);
+        JSON.parse(compiledBody); // Validate JSON before sending
+        options.body = compiledBody;
+        options.headers = { "Content-Type": "application/json" };
       }
 
       const response = await ky(endpoint, options);
@@ -95,22 +69,10 @@ export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async ({
       };
     });
 
-    // TODO: Publish "success" state for HTTP request
-    await publish(
-      httpRequestChannel().status({
-        nodeId,
-        status: "success",
-      })
-    );
-
+    await publish(httpRequestChannel().status({ nodeId, status: "success" }));
     return result;
   } catch (error) {
-    await publish(
-      httpRequestChannel().status({
-        nodeId,
-        status: "error",
-      })
-    );
-    throw error
+    await publish(httpRequestChannel().status({ nodeId, status: "error" }));
+    throw error;
   }
 };

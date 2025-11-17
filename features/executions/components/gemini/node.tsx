@@ -11,6 +11,7 @@ export type GeminiNodeData = {
   model?: AvailableModel;
   systemPrompt?: string;
   userPrompt?: string;
+  credentialId: string;
 };
 
 export type GeminiNodeType = Node<GeminiNodeData>;
