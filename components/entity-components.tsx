@@ -221,7 +221,7 @@ export const ErrorView = ({ message }: StateViewProps) => {
 };
 
 interface EmptyViewProps extends StateViewProps {
-  onNew: () => void;
+  onNew?: () => void;
 }
 
 export const EmptyView = ({ message, onNew }: EmptyViewProps) => {
