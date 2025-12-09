@@ -1,0 +1,78 @@
+import { memo, useState } from "react";
+import { useReactFlow, type Node, type NodeProps } from "@xyflow/react";
+import { BaseExecutionNode } from "../base-execution-node";
+import { useNodeStatus } from "../../hooks/use-node-status";
+import { AVAILABLE_MODELS, OpenAIDialog, OpenAIFormValues } from "./dialog";
+import { fetchOpenAIRealtimeToken } from "./action";
+
+export type AvailableModel = (typeof AVAILABLE_MODELS)[number];
+
+export type OpenAINodeData = {
+  model?: AvailableModel;
+  systemPrompt?: string;
+  userPrompt?: string;
+  credentialId: string;
+};
+
+export type OpenAINodeType = Node<OpenAINodeData>;
+
+export const OpenAINode = memo((props: NodeProps<OpenAINodeType>) => {
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const { setNodes } = useReactFlow();
+  const nodeStatus = useNodeStatus({
+    nodeId: props.id,
+    channel: "openai-execution",
+    topic: "status",
+    refreshToken: fetchOpenAIRealtimeToken,
+  });
+  const nodeData = props.data ?? {};
+  const handleOpenSettings = () => setDialogOpen(true);
+  const description = nodeData.userPrompt
+    ? `${nodeData.model ?? AVAILABLE_MODELS[0]}: ${nodeData.userPrompt.slice(
+        0,
+        50
+      )}...`
+    : "Not configured";
+
+  const handleSubmit = (values: OpenAIFormValues) => {
+    setNodes((nodes) =>
+      nodes.map((node) => {
+        if (node.id === props.id) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              ...values,
+            },
+          };
+        }
+
+        return node;
+      })
+    );
+  };
+
+  return (
+    <div>
+      <OpenAIDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        onSubmit={handleSubmit}
+        defaultValues={nodeData}
+      />
+
+      <BaseExecutionNode
+        {...props}
+        id={props.id}
+        icon="/logo/openai.svg"
+        name="OpenAI"
+        description={description}
+        onSettings={handleOpenSettings}
+        onDoubleClick={handleOpenSettings}
+        status={nodeStatus}
+      />
+    </div>
+  );
+});
+
+OpenAINode.displayName = "OpenAINode";

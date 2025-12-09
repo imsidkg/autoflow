@@ -6,6 +6,8 @@ import { ManualTriggerNode } from "@/features/triggers/manual-trigger/node";
 import { GoogleFormTrigger } from "@/features/triggers/google-form-trigger/node";
 import { GeminiNode } from "@/features/executions/components/gemini/node";
 import { DiscordNode } from "@/features/executions/components/discord/node";
+import { AnthropicNode } from "@/features/executions/components/anthropic/node";
+import { OpenAINode } from "@/features/executions/components/openai/node";
 export const nodeComponents = {
   [NodeType.INITIAL]: InitialNode,
   [NodeType.HTTP_REQUEST]: HttpRequestNode,
@@ -13,6 +15,8 @@ export const nodeComponents = {
   [NodeType.GOOGLE_FORM_TRIGGER]: GoogleFormTrigger,
   [NodeType.GEMINI]: GeminiNode,
   [NodeType.DISCORD]: DiscordNode,
+  [NodeType.ANTHROPIC]: AnthropicNode,
+  [NodeType.OPENAI]: OpenAINode,
 } as const satisfies NodeTypes;
 
 export type RegisteredNodeType = keyof typeof nodeComponents;

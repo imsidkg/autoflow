@@ -56,6 +56,18 @@ const executionNodes: NodeTypeOption[] = [
     icon: "/logo/gemini.svg",
   },
   {
+    type: NodeType.ANTHROPIC,
+    label: "Anthropic",
+    description: "Use Claude to generate text",
+    icon: "/logo/anthropic.svg",
+  },
+  {
+    type: NodeType.OPENAI,
+    label: "OpenAI",
+    description: "Use GPT to generate text",
+    icon: "/logo/openai.svg",
+  },
+  {
     type: NodeType.DISCORD,
     label: "Discord",
     description: "Send a message to Discord",

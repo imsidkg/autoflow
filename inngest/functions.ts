@@ -9,6 +9,8 @@ import { manualTriggerChannel } from "./channels/manual-trigger";
 import { googleFormTriggerChannel } from "./channels/google-form-trigger";
 import { geminiRequestChannel } from "./channels/gemini";
 import { discordChannel } from "./channels/discord";
+import { anthropicChannel } from "./channels/anthropic";
+import { openaiChannel } from "./channels/openai";
 
 export const execute = inngest.createFunction(
   {
@@ -34,6 +36,8 @@ export const execute = inngest.createFunction(
       googleFormTriggerChannel(),
       geminiRequestChannel(),
       discordChannel(),
+      anthropicChannel(),
+      openaiChannel(),
     ],
   },
   async ({ event, step, publish }) => {
