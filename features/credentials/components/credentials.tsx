@@ -116,9 +116,9 @@ export const CredentialsEmpty = () => {
 
 // Use plain string keys; no Prisma enum import.
 const credentialLogos: Record<CredentialType, string> = {
-  OPENAI: "/logos/openai.svg",
-  ANTHROPIC: "/logos/anthropic.svg",
-  GEMINI: "/logos/gemini.svg",
+  OPENAI: "/logo/openai.svg",
+  ANTHROPIC: "/logo/anthropic.svg",
+  GEMINI: "/logo/gemini.svg",
 };
 
 export const CredentialItem = ({ data }: { data: Credential }) => {

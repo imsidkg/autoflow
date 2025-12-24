@@ -32,7 +32,11 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import z from "zod";
-import { useCreateCredential, useSuspenseCredential, useUpdateCredential } from "../hooks/use-credentials";
+import {
+  useCreateCredential,
+  useSuspenseCredential,
+  useUpdateCredential,
+} from "../hooks/use-credentials";
 import { useUpgradeModal } from "@/hooks/use-upgrade-modal";
 
 const formSchema = z.object({
@@ -47,17 +51,17 @@ const credentialTypeOptions = [
   {
     value: CredentialType.OPENAI,
     label: "OpenAI",
-    logo: "/logos/openai.svg",
+    logo: "/logo/openai.svg",
   },
   {
     value: CredentialType.GEMINI,
     label: "Gemini",
-    logo: "/logos/gemini.svg",
+    logo: "/logo/gemini.svg",
   },
   {
     value: CredentialType.ANTHROPIC,
     label: "Anthropic",
-    logo: "/logos/anthropic.svg",
+    logo: "/logo/anthropic.svg",
   },
 ];
 
