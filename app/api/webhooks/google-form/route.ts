@@ -29,11 +29,12 @@ export async function POST(request: NextRequest) {
 
     await sendWorkflowExecution({
       workflowId,
-
-      initialData: {
+      initalizeData: {
         googleForm: formData,
       },
     });
+
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Google Webhook error", error);
     return NextResponse.json(
