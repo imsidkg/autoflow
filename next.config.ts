@@ -3,14 +3,12 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  async rewrites() {
-    return [
+  images: {
+    remotePatterns: [
       {
-        source: "/",
-        destination: "/workflows", // Matched parameters can be used in the destination
-        // permanent: false
+        hostname: "lh3.googleusercontent.com",
       },
-    ];
+    ],
   },
 };
 
