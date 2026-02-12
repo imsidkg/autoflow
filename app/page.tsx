@@ -193,7 +193,7 @@ export default function LandingPage() {
               (tech) => (
                 <div
                   key={tech}
-                  className="p-8 border-2 border-primary group hover:bg-primary transition-colors cursor-pointer"
+                  className="p-8 border-2 border-primary group hover:bg-primary transition-colors cursor-pointer flex items-center justify-center"
                 >
                   <span className="text-xl font-black group-hover:text-white tracking-widest text-primary uppercase">
                     {tech}
@@ -216,9 +216,9 @@ export default function LandingPage() {
           </p>
           <Link
             href="/signup"
-            className="inline-block bg-white text-primary px-12 py-6 text-2xl font-black hover:bg-opacity-95 transition-all uppercase tracking-tighter border-4 border-white active:translate-x-1 active:translate-y-1"
+            className="inline-block bg-white text-primary px-8 py-4 text-xl font-black hover:scale-105 hover:shadow-lg transition-all uppercase tracking-tighter border-4 border-white active:translate-x-1 active:translate-y-1"
           >
-            Create Free Account
+            Create Account
           </Link>
         </div>
       </section>
