@@ -75,10 +75,10 @@ export default function LandingPage() {
                   Get Started
                 </Link>
                 <Link
-                  href="/workflows"
+                  href="https://drive.google.com/file/d/1xczeucaWfcsMIqusy4_zcze3Yky9jZGJ/view?usp=drive_link"
                   className="border-2 border-primary text-primary px-8 py-4 font-bold hover:bg-primary hover:text-white transition-all uppercase text-sm tracking-widest"
                 >
-                  View Dashboard
+                  View Demo
                 </Link>
               </div>
             </div>
