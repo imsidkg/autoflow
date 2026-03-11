@@ -32,9 +32,6 @@ export const UpgradeModal = ({ open, onOpenChange }: UpgradeModalProps) => {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          {/* todo: add polar integration , it will also be added in the sidebar
-           */}
-          {/* <AlertDialogAction onClick={() => authClient.checkout({slug:'pro'})}>Continue</AlertDialogAction>  */}
           <AlertDialogAction>Upgrade Now</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

@@ -22,7 +22,6 @@ export const workflowsRouter = createTRPCRouter({
       await sendWorkflowExecution({ workflowId: input.id });
       return workflow;
     }),
-  // for this change protectedProcedure to protected after integrating better auth
   create: protectedProcedure.mutation(({ ctx }) => {
     return prisma.workflow.create({
       data: {
@@ -105,11 +104,6 @@ export const workflowsRouter = createTRPCRouter({
       });
 
       return await prisma.$transaction(async (tx) => {
-        // await tx.workflow.update({
-        //   where: { workflowId: id },
-        //   data: { name },
-        // });
-
         await tx.connection.deleteMany({ where: { workflowId: id } });
         await tx.node.deleteMany({ where: { workflowId: id } });
 

@@ -44,7 +44,7 @@ export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async ({
 
       if (["POST", "PUT", "PATCH"].includes(method)) {
         const compiledBody = Handlebars.compile(data.body ?? "{}")(context);
-        JSON.parse(compiledBody); // Validate JSON before sending
+        JSON.parse(compiledBody);
         options.body = compiledBody;
         options.headers = { "Content-Type": "application/json" };
       }

@@ -4,14 +4,12 @@ export const generateGoogleFormScript = (
   var formResponse = e.response;
   var itemResponses = formResponse.getItemResponses();
 
-  // Build responses object
   var responses = {};
   for (var i = 0; i < itemResponses.length; i++) {
     var itemResponse = itemResponses[i];
     responses[itemResponse.getItem().getTitle()] = itemResponse.getResponse();
   }
 
-  // Prepare webhook payload
   var payload = {
     formId: e.source.getId(),
     formTitle: e.source.getTitle(),
@@ -21,7 +19,6 @@ export const generateGoogleFormScript = (
     responses: responses
   };
 
-  // Send to webhook
   var options = {
     'method': 'post',
     'contentType': 'application/json',

@@ -45,10 +45,9 @@ const formSchema = z.object({
         "Variable name must start with a letter or underscore and contain only letters, numbers, and underscores",
     }),
 
-  endpoint: z.string().min(1,{ message: "Please enter a valid URL" }),
+  endpoint: z.string().min(1, { message: "Please enter a valid URL" }),
   method: z.enum(["GET", "POST", "PUT", "PATCH", "DELETE"]),
   body: z.string().optional(),
-  // .refine() TODO
 });
 
 export type HttpRequestFormValues = z.infer<typeof formSchema>;
@@ -207,10 +206,6 @@ export const HTTPRequestDialog = ({
             </DialogFooter>
           </form>
         </Form>
-
-        {/* <div className="py-4">
-          <p className="text-sm text-muted-foreground">Manual Trigger</p>
-        </div> */}
       </DialogContent>
     </Dialog>
   );

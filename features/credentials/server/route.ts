@@ -5,7 +5,6 @@ import { PAGINATION } from "@/config/consants";
 import { CredentialType } from "@/lib/generated/prisma";
 
 export const credentialsRouter = createTRPCRouter({
-  // for this change protectedProcedure to premium after integrating better auth
   create: protectedProcedure
     .input(
       z.object({
@@ -22,7 +21,7 @@ export const credentialsRouter = createTRPCRouter({
           name,
           userId: ctx.auth.user.id,
           type,
-          value, // to be added as encrypted value
+          value,
         },
       });
     }),
@@ -82,7 +81,7 @@ export const credentialsRouter = createTRPCRouter({
         data: {
           name,
           type,
-          value, // to be added as encrypted value
+          value,
         },
       });
     }),

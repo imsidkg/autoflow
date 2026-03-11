@@ -30,8 +30,6 @@ const page = async ({ params }: Props) => {
             <div>
               <WorkflowsError />
             </div>
-
-            // <p>Error</p>
           }
         >
           <Suspense

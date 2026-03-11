@@ -220,42 +220,6 @@ export const NodeSelector = ({
               );
             })}
           </div>
-          {/* <Separator /> */}
-          {/* <div className="grid flex-1 auto-rows-min gap-6 px-4"> */}
-          {/* {executionNodes.map((nodeType) => {
-              const Icon = nodeType.icon;
-
-              return (
-                <div
-                  key={nodeType.type}
-                  className="w-full justify-start h-auto py-5 px-4 rounded-none cursor-pointer border-l-2 border-transparent hover:border-l-primary"
-                  onClick={() => {}}
-                >
-                  <div className="flex items-center gap-6 w-full overflow-hidden">
-                    {typeof Icon === "string" ? (
-                      <img
-                        src={Icon}
-                        alt={nodeType.label}
-                        className="size-5 object-contain rounded-sm"
-                      />
-                    ) : (
-                      <Icon className="size-5" />
-                    )}
-                  </div>
-                  <div className="flex flex-col items-start text-left">
-                    <span className="font-medium text-sm">
-                      {nodeType.label}
-                    </span>
-
-                    <span className="text-xs text-muted-foreground">
-                      {nodeType.description}
-                    </span>
-                  </div>
-                </div>
-              );
-            })} */}
-          {/* </div> */}
-
           <SheetFooter>
             <Button type="submit">Save changes</Button>
             <SheetClose asChild>
