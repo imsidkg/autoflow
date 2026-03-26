@@ -40,12 +40,12 @@ import { CredentialType } from "@/lib/generated/prisma";
 import Image from "next/image";
 
 export const AVAILABLE_MODELS = [
+  "gemini-2.0-flash",
   "gemini-1.5-flash",
   "gemini-1.5-flash-8b",
   "gemini-1.5-pro",
   "gemini-1.0-pro",
   "gemini-pro",
-  "gemini-2.0-flash",
 ] as const;
 
 const formSchema = z.object({
