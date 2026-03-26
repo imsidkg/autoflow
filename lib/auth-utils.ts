@@ -17,5 +17,7 @@ export const requireUnauth = async () => {
     headers: await headers(),
   });
 
-  if (session) redirect("/");
+  // If the user is already authenticated, take them to the app instead of
+  // bouncing to the public landing page.
+  if (session) redirect("/workflows");
 };
