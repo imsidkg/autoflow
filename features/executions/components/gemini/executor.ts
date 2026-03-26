@@ -88,7 +88,7 @@ export const geminiExecutor: NodeExecutor<GeminiData> = async ({
 
   try {
     const { steps } = await step.ai.wrap("gemini-generate-text", generateText, {
-      model: google(data.model || "gemini-1.5-flash"),
+      model: google(data.model || "gemini-2.0-flash"),
       system: systemPrompt,
       prompt: userPrompt,
       experimental_telemetry: {

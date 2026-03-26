@@ -23,7 +23,7 @@ const page = async ({ params }: Props) => {
 
   prefetchWorkflow(workflowId);
   return (
-    <div>
+    <div className="flex h-svh flex-col overflow-hidden">
       <HydrateClient>
         <ErrorBoundary
           fallback={
@@ -42,7 +42,7 @@ const page = async ({ params }: Props) => {
             }
           >
             <EditorHeader workflowId={workflowId} />
-            <main className="flex-1 h-screen">
+            <main className="flex-1 min-h-0">
               <Editor workflowId={workflowId} />
             </main>
           </Suspense>

@@ -3,10 +3,11 @@ import prisma from "@/lib/db";
 import z from "zod";
 import { queryKeys } from "inngest";
 import { PAGINATION } from "@/config/consants";
-import { NodeType } from "@/lib/generated/prisma";
+import { CredentialType, NodeType } from "@/lib/generated/prisma";
 import type { Edge, Node } from "@xyflow/react";
 import { inngest } from "@/inngest/client";
 import { sendWorkflowExecution } from "@/inngest/utils";
+import { generateGraphPlanFromInstructions } from "./generate-graph-plan";
 
 export const workflowsRouter = createTRPCRouter({
   execute: protectedProcedure
@@ -21,6 +22,42 @@ export const workflowsRouter = createTRPCRouter({
 
       await sendWorkflowExecution({ workflowId: input.id });
       return workflow;
+    }),
+
+  generateFromInstructions: protectedProcedure
+    .input(
+      z.object({
+        workflowId: z.string(),
+        instructions: z.string().min(1, "Instructions are required"),
+        // UI can use this to decide whether to append or replace.
+        // The backend generates a graph plan independent of mode.
+        mode: z.enum(["append", "replace"]).default("append").optional(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { workflowId, instructions } = input;
+
+      // Ensure the workflow exists and belongs to the user.
+      await prisma.workflow.findUniqueOrThrow({
+        where: { id: workflowId, userId: ctx.auth.user.id },
+      });
+
+      const credentials = await prisma.credential.findMany({
+        where: { userId: ctx.auth.user.id },
+        select: { id: true, type: true },
+      });
+
+      const credentialIdByType: Partial<
+        Record<CredentialType, string>
+      > = {};
+      for (const credential of credentials) {
+        credentialIdByType[credential.type] = credential.id;
+      }
+
+      return generateGraphPlanFromInstructions({
+        instructions,
+        credentialIdByType,
+      });
     }),
   create: protectedProcedure.mutation(({ ctx }) => {
     return prisma.workflow.create({
