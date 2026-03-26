@@ -69,6 +69,23 @@ type GraphPlan = {
   }>;
 };
 
+const NODE_TYPE_ALIASES: Array<[RegExp, NodeType]> = [
+  [/\b(google\s*form|google-form)\b/i, NodeType.GOOGLE_FORM_TRIGGER],
+  [/\b(manual\s*trigger|manual)\b/i, NodeType.MANUAL_TRIGGER],
+  [/\b(http\s*request|http|api)\b/i, NodeType.HTTP_REQUEST],
+  [/\b(anthropic|claude)\b/i, NodeType.ANTHROPIC],
+  [/\b(openai|open ai|gpt)\b/i, NodeType.OPENAI],
+  [/\b(gemini|google\s*gemini)\b/i, NodeType.GEMINI],
+  [/\b(discord)\b/i, NodeType.DISCORD],
+];
+
+function parseNodeTypeAlias(text: string): NodeType | null {
+  for (const [pattern, type] of NODE_TYPE_ALIASES) {
+    if (pattern.test(text)) return type;
+  }
+  return null;
+}
+
 export const Editor = ({ workflowId }: { workflowId: string }) => {
   const { data: workflow } = useSuspenseWorkflow(workflowId);
 
@@ -219,6 +236,59 @@ export const Editor = ({ workflowId }: { workflowId: string }) => {
     if (!trimmed) {
       toast.error("Enter workflow instructions first");
       return;
+    }
+
+    // Fast-path edit intent: "replace X with Y" applies directly on current graph.
+    const replaceMatch = trimmed.match(/replace\s+(.+?)\s+with\s+(.+)/i);
+    if (replaceMatch) {
+      const fromAlias = replaceMatch[1]?.trim() ?? "";
+      const toAlias = replaceMatch[2]?.trim() ?? "";
+      const fromType = parseNodeTypeAlias(fromAlias);
+      const toType = parseNodeTypeAlias(toAlias);
+
+      if (fromType && toType && fromType !== toType) {
+        let replacedCount = 0;
+        setNodes((curr) =>
+          curr.map((node) => {
+            if (node.type !== fromType) return node;
+            replacedCount += 1;
+
+            const currentData = (node.data ?? {}) as Record<string, unknown>;
+            const nextData = { ...currentData };
+
+            // Credentials are provider-specific; force re-selection after provider swap.
+            if ("credentialId" in nextData) {
+              delete nextData.credentialId;
+            }
+
+            return {
+              ...node,
+              type: toType,
+              data: nextData,
+            };
+          })
+        );
+
+        setChatMessages((prev) => [
+          ...prev,
+          { id: createId(), role: "user", content: trimmed },
+          {
+            id: createId(),
+            role: "assistant",
+            content:
+              replacedCount > 0
+                ? `Replaced ${replacedCount} ${fromType} node(s) with ${toType}.`
+                : `No ${fromType} node found to replace.`,
+          },
+        ]);
+        setInstructions("");
+        toast.success(
+          replacedCount > 0
+            ? "Applied replacement to current workflow."
+            : "No matching nodes found for replacement."
+        );
+        return;
+      }
     }
 
     try {
